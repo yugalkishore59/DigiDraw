@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "806027959959",
+    "project_id": "digidraw-120ac",
+    "storage_bucket": "digidraw-120ac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:806027959959:android:5bcb30319b2500d5a293d2",
+        "android_client_info": {
+          "package_name": "com.fetchHere.DigiDrawGuess"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "806027959959-hg6cloiin7hum5aebv2h24pg9d3kf5im.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fetchHere.DigiDrawGuess",
+            "certificate_hash": "831093b3144d021966673821c0b9b0f27dfa851f"
+          }
+        },
+        {
+          "client_id": "806027959959-3d0th5061g2i2bd7k4i2e2lfut6nlulf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7KrnW3TzreiS_5umg43PdQUpfoHNOJHw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "806027959959-3d0th5061g2i2bd7k4i2e2lfut6nlulf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
