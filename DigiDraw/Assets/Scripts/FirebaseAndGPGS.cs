@@ -29,6 +29,7 @@ public class FirebaseAndGPGS : MonoBehaviour{
     [SerializeField] bool isGooglePlaySignedIn = false;
     string gpgsServerAuthCode;
     public string avatarUrl;
+    string leaderboardId = "CgkIl72K2LoXEAIQAg";
 
     [Header("Game")]
     public string userName="Guest";
@@ -117,5 +118,20 @@ public class FirebaseAndGPGS : MonoBehaviour{
         // have one; use User.TokenAsync() instead.
         userId = firebaseUser.UserId;
         }
+    }
+
+    public void ShowLeaderboard(){
+        Social.ShowLeaderboardUI();
+    }
+
+    public void ReportSketchesToLeaderBoard(int sketches){
+        Social.ReportScore(sketches, leaderboardId, (success) =>{
+            if (success){
+                Debug.Log("Score reported successfully!");
+            }
+            else{
+                Debug.LogWarning("Failed to report score.");
+            }
+        });
     }
 }

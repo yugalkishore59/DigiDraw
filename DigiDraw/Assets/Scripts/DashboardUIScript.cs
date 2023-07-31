@@ -33,4 +33,8 @@ public class DashboardUIScript : MonoBehaviour
             image.overrideSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         }
     }
+
+    public void ShowLeaderboard(){
+        FirebaseAndGPGS.Instance.ShowLeaderboard();
+    }
 }
