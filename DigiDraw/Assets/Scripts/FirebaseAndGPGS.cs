@@ -43,7 +43,9 @@ public class FirebaseAndGPGS : MonoBehaviour{
 
         PlayGamesPlatform.Activate();
         InitializeFirebase();
-        if(isFireBaseReady) SignIntoGPGS();
+        //logs+="isFirebaseReady = "+isFireBaseReady+"\n";
+        //if(isFireBaseReady) SignIntoGPGS();
+        SignIntoGPGS();
     }
 
     private void Update() {
