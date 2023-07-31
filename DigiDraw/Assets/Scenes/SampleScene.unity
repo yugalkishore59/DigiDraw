@@ -436,7 +436,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 760817282}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1763416053}
+        m_TargetAssemblyTypeName: FirebaseAndGPGS, Assembly-CSharp
+        m_MethodName: SignIntoGPGS
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &760817282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -885,7 +897,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 969711f476a36eb41a4796ae62641b70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  txt: {fileID: 1965786331}
+  logsTxt: {fileID: 1965786331}
+  isFireBaseReady: 0
+  isGooglePlaySignedIn: 0
+  userName: Guest
+  userId: 0
+  sketches: 0
+  rank: 0
 --- !u!4 &1763416054
 Transform:
   m_ObjectHideFlags: 0
@@ -935,8 +953,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 50}
-  m_SizeDelta: {x: 0, y: 50}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 700}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1965786331
 MonoBehaviour:
@@ -958,7 +976,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: Logs
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -993,7 +1011,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 1024
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
