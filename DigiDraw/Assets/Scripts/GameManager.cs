@@ -21,9 +21,33 @@ public class GameManager : MonoBehaviour{
         //if(isFireBaseReady) SignIntoGPGS();
         FirebaseAndGPGS.Instance.SignIntoGPGS();
     }
+
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.Escape)){
+            GoToPreviousScene();
+        }
+    }
     
     public void SetScene(string scene){
         SceneManager.LoadScene(scene);
+    }
+
+    void GoToPreviousScene(){
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int previousSceneIndex = currentSceneIndex - 1;
+        if (previousSceneIndex >= 0){
+            SceneManager.LoadScene(previousSceneIndex);
+        }else{
+            QuitApplication();
+        }
+    }
+
+    public void QuitApplication(){
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
     }
 
 }

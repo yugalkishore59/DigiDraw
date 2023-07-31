@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DashBoard.unity
     guid: 67ea682940974954cab18fd4d8553ca7
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: 74c9d7fd8470bd54abfee475cf873cbb
   m_configObjects: {}

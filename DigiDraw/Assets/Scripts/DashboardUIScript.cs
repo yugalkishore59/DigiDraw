@@ -37,4 +37,8 @@ public class DashboardUIScript : MonoBehaviour
     public void ShowLeaderboard(){
         FirebaseAndGPGS.Instance.ShowLeaderboard();
     }
+
+    public void ShowLobbies(){
+        GameManager.Instance.SetScene("Lobby");
+    }
 }
