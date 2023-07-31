@@ -28,6 +28,7 @@ public class FirebaseAndGPGS : MonoBehaviour{
     [Header("GPGS")]
     [SerializeField] bool isGooglePlaySignedIn = false;
     string gpgsServerAuthCode;
+    public string avatarUrl;
 
     [Header("Game")]
     public string userName="Guest";
@@ -40,19 +41,13 @@ public class FirebaseAndGPGS : MonoBehaviour{
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }else Destroy(gameObject);
-
-        PlayGamesPlatform.Activate();
-        InitializeFirebase();
-        //logs+="isFirebaseReady = "+isFireBaseReady+"\n";
-        //if(isFireBaseReady) SignIntoGPGS();
-        SignIntoGPGS();
     }
 
     private void Update() {
         logsTxt.text = logs;
     }
 
-    void InitializeFirebase(){
+    public void InitializeFirebase(){
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>{
             var dependencyStatus = task.Result;
             if (dependencyStatus == Firebase.DependencyStatus.Available){
@@ -67,6 +62,7 @@ public class FirebaseAndGPGS : MonoBehaviour{
         });
     }
     public void SignIntoGPGS(){
+        PlayGamesPlatform.Activate();
         if(!isGooglePlaySignedIn){
             PlayGamesPlatform.Instance.Authenticate((success) =>{
                 if (success == SignInStatus.Success){
@@ -79,8 +75,10 @@ public class FirebaseAndGPGS : MonoBehaviour{
                             logs+="Could not get auth code from play games.\n";
                             return;
                         }
+                        avatarUrl = PlayGamesPlatform.Instance.GetUserImageUrl();
                         AuthenticateFirebase(gpgsServerAuthCode);
                         isGooglePlaySignedIn = true;
+                        GameManager.Instance.SetScene("DashBoard");
                     });
                 }else{
                     Debug.Log("Login Unsuccessful");
