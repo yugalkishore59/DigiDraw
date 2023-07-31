@@ -469,8 +469,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: -5177388603050735206, guid: 8884154dfe85442a3a3578be807dbcdf, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -900,6 +900,7 @@ MonoBehaviour:
   logsTxt: {fileID: 1965786331}
   isFireBaseReady: 0
   isGooglePlaySignedIn: 0
+  avatarUrl: 
   userName: Guest
   userId: 0
   sketches: 0
@@ -963,6 +964,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d34c2f8728ad33a4a9af1bd196b23513, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  profileImage: {fileID: 0}
 --- !u!1 &1965786329
 GameObject:
   m_ObjectHideFlags: 0
