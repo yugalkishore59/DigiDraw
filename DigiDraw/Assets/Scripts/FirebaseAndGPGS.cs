@@ -27,7 +27,7 @@ public class FirebaseAndGPGS : MonoBehaviour{
 
     [Header("GPGS")]
     [SerializeField] bool isGooglePlaySignedIn = false;
-    string gpgsServerAuthCode;
+    public string gpgsServerAuthCode;
     public string avatarUrl;
     string leaderboardId = "CgkIl72K2LoXEAIQAg";
 
