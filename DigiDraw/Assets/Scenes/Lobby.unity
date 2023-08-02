@@ -425,9 +425,9 @@ RectTransform:
   - {fileID: 756411507}
   m_Father: {fileID: 1498575226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -20}
   m_SizeDelta: {x: 1040, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &477377213
@@ -1663,9 +1663,9 @@ RectTransform:
   - {fileID: 961862239}
   m_Father: {fileID: 1498575226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -240}
   m_SizeDelta: {x: 1040, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1054110160
@@ -1955,9 +1955,9 @@ RectTransform:
   - {fileID: 85167028}
   m_Father: {fileID: 1498575226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -460}
   m_SizeDelta: {x: 1040, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1234115570
@@ -2271,9 +2271,9 @@ RectTransform:
   - {fileID: 869675221}
   m_Father: {fileID: 1498575226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -680}
   m_SizeDelta: {x: 1040, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1421116414
@@ -2443,9 +2443,9 @@ RectTransform:
   - {fileID: 523036740}
   m_Father: {fileID: 1498575226}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -900}
   m_SizeDelta: {x: 1040, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1771506751
