@@ -10,6 +10,11 @@ public class GameManager : MonoBehaviour{
     private bool isSignedIn = false;
     public Image profileImage;
 
+    [Header("lobby")]
+    public bool isLobbyHost = true;
+    public string LobbyTheme = "Regular";
+    public int maxPlayers = 8;
+
     private void Awake() {
          if(Instance == null){
             Instance = this;
