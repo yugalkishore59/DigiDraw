@@ -145,6 +145,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pixelColor:
     serializedVersion: 2
-    rgba: 4294902015
+    rgba: 16777215
   yIndex: 0
   xIndex: 0
