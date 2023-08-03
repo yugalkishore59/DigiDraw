@@ -5037,6 +5037,7 @@ MonoBehaviour:
   drawingMode: {fileID: 1576516825}
   guessingMode: {fileID: 1745258832}
   timeTxt: {fileID: 323272260}
+  totalPlayers: 0
 --- !u!1 &2011990983
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,29 +8,12 @@ using Unity.Services.Lobbies;
 
 public class LobbyManager : MonoBehaviour {
 
-    Lobby hostLobby = null, clientLobby=null;
-    float heartbeatTimer=0;
-
     private async void Start() {
         await UnityServices.InitializeAsync(); //initialize unity services
         AuthenticationService.Instance.SignedIn += () => {
             Debug.Log("signed in as "+AuthenticationService.Instance.PlayerId);
         };
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
-    }
-
-    private void Update() {
-        LobbyHeartbeat();
-    }
-
-    private async void LobbyHeartbeat(){
-        if (hostLobby!=null) {
-            heartbeatTimer-=Time.deltaTime;
-            if(heartbeatTimer<0f){
-                heartbeatTimer = 15;
-                await LobbyService.Instance.SendHeartbeatPingAsync(hostLobby.Id);
-            }
-        }
     }
 
     private Player GetPlayer(){
@@ -49,8 +32,9 @@ public class LobbyManager : MonoBehaviour {
                 Player = GetPlayer()
             };
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName,maxPlayers,createLobbyOptions);
-            hostLobby = lobby;
-            clientLobby = lobby;
+            GameManager.Instance.hostLobby = lobby;
+            GameManager.Instance.clientLobby = lobby;
+            GameManager.Instance.isInLobby=true;
             Debug.Log("Created lobby - "+lobby.Name+" "+lobby.MaxPlayers+" "+lobby.LobbyCode+" "+lobby.Id);
         }catch(LobbyServiceException e){
             Debug.Log(e);
@@ -63,7 +47,7 @@ public class LobbyManager : MonoBehaviour {
                 Player = GetPlayer()
             };
             Lobby lobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode,joinLobbyByCodeOptions);
-            clientLobby = lobby;
+            GameManager.Instance.clientLobby = lobby;
             Debug.Log("Joined Lobby with code "+lobbyCode);
             Debug.Log(GetPlayer().Data["PlayerName"].Value+" just joined the lobby");
         }catch(LobbyServiceException e){
@@ -73,7 +57,8 @@ public class LobbyManager : MonoBehaviour {
 
     public async void ExitLobby(){
         try{
-            await LobbyService.Instance.RemovePlayerAsync(clientLobby.Id,AuthenticationService.Instance.PlayerId);
+            await LobbyService.Instance.RemovePlayerAsync(GameManager.Instance.clientLobby.Id,AuthenticationService.Instance.PlayerId);
+            GameManager.Instance.isInLobby = false;
         }catch(LobbyServiceException e){
             Debug.Log(e);
         }
@@ -81,9 +66,13 @@ public class LobbyManager : MonoBehaviour {
 
     public async void DeleteLobby(){
         try{
-            await LobbyService.Instance.DeleteLobbyAsync(hostLobby.Id);
+            await LobbyService.Instance.DeleteLobbyAsync(GameManager.Instance.hostLobby.Id);
         }catch(LobbyServiceException e){
             Debug.Log(e);
         }
+    }
+
+    public void JoinOrCreateRegularLobby(){
+        
     }
 }
