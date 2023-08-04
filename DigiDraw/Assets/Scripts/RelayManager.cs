@@ -17,7 +17,7 @@ public class RelayManager : MonoBehaviour{
 
     private void Awake() {
         Instance = this;
-
+        //TODO : add exceptions to handle errors
         StartGame();
     }
 
@@ -31,12 +31,13 @@ public class RelayManager : MonoBehaviour{
             });
             LobbyManager.Instance.joinedLobby = lobby;
         }else{
-             string _relayCode="0";
+            string _relayCode="0";
             while(_relayCode == "0"){
                 _relayCode = LobbyManager.Instance.joinedLobby.Data["RelayCode"].Value;
             }
             JoinRelay(_relayCode);
         }
+        RoomManager.Instance.InitializeGame();
     }
 
      private async Task<string> CreateRelay(){

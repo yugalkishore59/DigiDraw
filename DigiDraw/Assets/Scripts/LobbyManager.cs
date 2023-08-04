@@ -10,6 +10,7 @@ public class LobbyManager : MonoBehaviour{
 
     private string playerName="Guest";
     private float heartbeatTimer=0f;
+    private float lobbyPollTimer=0f;
     public Lobby joinedLobby;
     public List<Lobby> lobbyList;
 
@@ -25,6 +26,7 @@ public class LobbyManager : MonoBehaviour{
 
    private void Update() {
         LobbyHeartbeat();
+        HandleLobbyPolling();
    }
 
    public async void Authenticate() {
@@ -50,6 +52,36 @@ public class LobbyManager : MonoBehaviour{
         }
     }
 
+    private async void HandleLobbyPolling() {
+        if (joinedLobby != null) {
+            lobbyPollTimer -= Time.deltaTime;
+            if (lobbyPollTimer < 0f) {
+                float lobbyPollTimerMax = 1.1f;
+                lobbyPollTimer = lobbyPollTimerMax;
+
+                joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+
+                if (!IsPlayerInLobby()) {
+                    // Player was kicked out of this lobby
+                    Debug.Log("Kicked from Lobby!");
+                    joinedLobby = null;
+                }
+            }
+        }
+    }
+
+    private bool IsPlayerInLobby() {
+        if (joinedLobby != null && joinedLobby.Players != null) {
+            foreach (Player player in joinedLobby.Players) {
+                if (player.Id == AuthenticationService.Instance.PlayerId) {
+                    // This player is in this lobby
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public bool IsLobbyHost() {
         return joinedLobby != null && joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
     }
@@ -60,18 +92,22 @@ public class LobbyManager : MonoBehaviour{
         });
     }
 
-    public async void CreateLobby(string lobbyName, int maxPlayers, bool isPrivate) {
+    public async void CreateLobby(string lobbyName, int maxPlayers, bool _isPrivate, int _maxRounds = 2, int _maxDrawingTime=90) {
         try{
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions{
-                IsPrivate = isPrivate,
+                IsPrivate = _isPrivate,
                 Player = GetPlayer(),
                 Data = new Dictionary<string, DataObject>{
-                    {"RelayCode", new DataObject(DataObject.VisibilityOptions.Public,"0")}
+                    {"RelayCode", new DataObject(DataObject.VisibilityOptions.Public,"0")},
+                    {"MaxDrawingTime",new DataObject(DataObject.VisibilityOptions.Public,_maxDrawingTime.ToString())},
+                    {"MaxRounds",new DataObject(DataObject.VisibilityOptions.Public,_maxRounds.ToString())}
                 }
             };
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName,maxPlayers,createLobbyOptions);
             joinedLobby = lobby;
             Debug.Log("Created lobby - "+lobby.Name);
+            GameManager.Instance.SetScene("GameMultiplayer");
+            
         }catch(LobbyServiceException e){
             Debug.Log(e);
         }
@@ -114,7 +150,7 @@ public class LobbyManager : MonoBehaviour{
             Debug.Log("Joined Lobby with code "+lobbyCode);
             Debug.Log(GetPlayer().Data["PlayerName"].Value+" just joined the lobby");
 
-            //TODO : switch to next scene
+            GameManager.Instance.SetScene("GameMultiplayer");
         }catch(LobbyServiceException e){
             Debug.Log(e);
             //TODO : Android toast - invalid lobby code or something went wrong
@@ -122,19 +158,15 @@ public class LobbyManager : MonoBehaviour{
     }
 
     public async void JoinLobby(Lobby lobby) {
-        Player player = GetPlayer();
-
-        joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, new JoinLobbyByIdOptions {
-            Player = player
-        });
-
         try{
             JoinLobbyByIdOptions joinLobbyByIdOptions = new JoinLobbyByIdOptions {
-                Player = player
+                Player = GetPlayer()
             };
             joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id,joinLobbyByIdOptions);
             Debug.Log("Joined Lobby with id "+lobby.Id);
             Debug.Log(GetPlayer().Data["PlayerName"].Value+" just joined the lobby");
+
+            GameManager.Instance.SetScene("GameMultiplayer");
         }catch(LobbyServiceException e){
             Debug.Log(e);
         }
@@ -147,7 +179,8 @@ public class LobbyManager : MonoBehaviour{
             if(joinedLobby!=null){
                 Debug.Log("Quick joined Lobby with id "+joinedLobby.Id);
             Debug.Log(GetPlayer().Data["PlayerName"].Value+" just joined the lobby");
-            //TODO : next scene
+            
+            GameManager.Instance.SetScene("GameMultiplayer");
             }else{
                 Debug.Log("no lobby found");
                 //TODO : Android toast - no lobby found

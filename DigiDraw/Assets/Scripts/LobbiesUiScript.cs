@@ -76,11 +76,9 @@ public class LobbiesUiScript : MonoBehaviour{
         else if ( _maxRounds<1)_maxRounds =2;
 
         if(_maxTime >300) _maxTime=300;
-        else if (_maxTime <=30) _maxTime=90;
+        else if (_maxTime <30) _maxTime=90;
 
-        //TODO : update maxround and maxtime in gamemanager
-
-        LobbyManager.Instance.CreateLobby(_name,_maxPlayers,isPrivate);
+        LobbyManager.Instance.CreateLobby(_name,_maxPlayers,isPrivate,_maxRounds,_maxTime);
     }
 
     private IEnumerator TimerCoroutine(int timerDuration){
