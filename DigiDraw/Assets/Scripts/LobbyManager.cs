@@ -10,7 +10,7 @@ public class LobbyManager : MonoBehaviour{
 
     private string playerName="Guest";
     private float heartbeatTimer=0f;
-    private Lobby joinedLobby;
+    public Lobby joinedLobby;
     public List<Lobby> lobbyList;
 
    private void Awake() {
@@ -18,8 +18,8 @@ public class LobbyManager : MonoBehaviour{
         Instance = this;
         DontDestroyOnLoad(this);
     }else Destroy(gameObject);
-    //debug comment - uncomment 
-    //playerName = FirebaseAndGPGS.Instance.userName;
+
+    playerName = FirebaseAndGPGS.Instance.userName;
     Authenticate();
    } 
 
@@ -64,7 +64,10 @@ public class LobbyManager : MonoBehaviour{
         try{
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions{
                 IsPrivate = isPrivate,
-                Player = GetPlayer()
+                Player = GetPlayer(),
+                Data = new Dictionary<string, DataObject>{
+                    {"RelayCode", new DataObject(DataObject.VisibilityOptions.Public,"0")}
+                }
             };
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName,maxPlayers,createLobbyOptions);
             joinedLobby = lobby;
