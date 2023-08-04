@@ -15,7 +15,7 @@ public class RoomManager : NetworkBehaviour{
 
 
     public int gameMode = 0; //0 waiting, 1 guessing, 2 drawing
-    private List<ulong> clientIdQueue = new List<ulong>(LobbyManager.Instance.joinedLobby.MaxPlayers); //list holding client ids
+    private List<ulong> clientIdQueue;
     private int currentArtistIndex = 0;
     private int round = 1; 
     private int maxRounds = 2; //max 2 rounds per game
@@ -31,13 +31,18 @@ public class RoomManager : NetworkBehaviour{
 
     //debug
     public GameObject drawingMode, guessingMode;
-    public TextMeshProUGUI timeTxt;
+    public TextMeshProUGUI timeTxt,lobbyCodeTxt,testvartxt;
+    bool isGameStarted =false;
 
     private void Awake() {
         Instance = this;
         isWaiting.Value = true;
         timer.Value = 0;
+        clientIdQueue = new List<ulong>(LobbyManager.Instance.joinedLobby.MaxPlayers); //list holding client ids
     }
+
+    //debug
+    private NetworkVariable<int> testVar = new NetworkVariable<int>();
 
     public void InitializeGame(){
         int.TryParse(LobbyManager.Instance.joinedLobby.Data["MaxDrawingTime"].Value,out maxDrawingTime);
@@ -47,10 +52,19 @@ public class RoomManager : NetworkBehaviour{
         if(maxRounds == 0) maxRounds = 2;
 
         if(LobbyManager.Instance.IsLobbyHost()){
+            //debug 
+            testVar.Value = 1;
+
             currentArtist.Value = OwnerClientId;
             currentArtistIndex = 0;
             clientIdQueue.Add(OwnerClientId);
+            lobbyCodeTxt.text += "\nI am host - "+OwnerClientId;
+            lobbyCodeTxt.text += "\ntotal players - "+clientIdQueue.Count;
         }else{
+            //debug 
+            testVar.Value++;
+
+            lobbyCodeTxt.text += "\ni am client "+OwnerClientId.ToString();
             AddMeToQueueServerRpc(OwnerClientId);
             if(!isWaiting.Value){ // auto switch to guessing mode if not waiting
                 gameMode=1;
@@ -59,16 +73,23 @@ public class RoomManager : NetworkBehaviour{
                 drawingMode.SetActive(false);
                 guessingMode.SetActive(true);
                 Debug.Log("guessing mode");
+                lobbyCodeTxt.text += "\nguessing mode";
             } 
         }
+        lobbyCodeTxt.text += "\n"+LobbyManager.Instance.joinedLobby.LobbyCode;
+        isGameStarted = true;
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     void AddMeToQueueServerRpc(ulong _clientId){
+        lobbyCodeTxt.text += "\ncalled server rpc";
         clientIdQueue.Add(_clientId);
+        lobbyCodeTxt.text += "\nnew player joined. total = "+clientIdQueue.Count;
     }
 
     private void Update() {
+        testvartxt.text = testVar.Value.ToString();
+        if(!isGameStarted) return;
         timeTxt.text = ((int)timer.Value).ToString() + "s";
 
         if(isWaiting.Value){
@@ -77,12 +98,14 @@ public class RoomManager : NetworkBehaviour{
                 gameMode = 0;
             }    
         }
-        if(!IsHost) return; //below this, only host can go
+        
+        if(!IsServer) return; //below this, only host can go         
 
         if(clientIdQueue.Count<2){
             if(!isWaiting.Value){
                 isWaiting.Value =true;
                 Debug.Log("waitning for others");
+                if(clientIdQueue.Count==1) lobbyCodeTxt.text += "\nwaiting for others";
             }
         }else if(timer.Value <=0){
             if(!isWaiting.Value){
@@ -93,6 +116,7 @@ public class RoomManager : NetworkBehaviour{
                         currentArtistIndex=0;
                         round++;
                         Debug.Log("next round");
+                        lobbyCodeTxt.text += "\nnext round";
                     }
                     timer.Value = maxDrawingTime;
                     ChangeGameModeClientRpc();
@@ -118,6 +142,7 @@ public class RoomManager : NetworkBehaviour{
             drawingMode.SetActive(true);
             guessingMode.SetActive(false);
             Debug.Log("drawing mode");
+            lobbyCodeTxt.text += "drawing mode";
         }else{
             //load guessing mode
             gameMode =1;
@@ -125,6 +150,7 @@ public class RoomManager : NetworkBehaviour{
             drawingMode.SetActive(false);
             guessingMode.SetActive(true);
             Debug.Log("guessing mode");
+            lobbyCodeTxt.text += "guessing mode";
         }
     }
     
@@ -134,6 +160,7 @@ public class RoomManager : NetworkBehaviour{
         drawingMode.SetActive(false);
         guessingMode.SetActive(false);
         Debug.Log("new game starts in 5 sec");
+        lobbyCodeTxt.text += "\nnew game starts in 5 sec";
 
         yield return new WaitForSeconds(timeDuration);
         //send results
