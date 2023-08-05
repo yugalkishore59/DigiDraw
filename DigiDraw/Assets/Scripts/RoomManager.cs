@@ -39,6 +39,7 @@ public class RoomManager : NetworkBehaviour{
     bool isPlayerReady = false;
     bool isStartinitialise = false;
     bool isInitialized = false;
+    bool isInitializing = false;
 
     public void SetPlayer(GameObject _player){
         player=_player;
@@ -62,27 +63,28 @@ public class RoomManager : NetworkBehaviour{
     }
 
     public void InitializeGame(){
+        isInitializing = true;
         int.TryParse(LobbyManager.Instance.joinedLobby.Data["MaxDrawingTime"].Value,out maxDrawingTime);
         int.TryParse(LobbyManager.Instance.joinedLobby.Data["MaxRounds"].Value,out maxRounds);
 
         if(maxDrawingTime == 0) maxDrawingTime =90;
         if(maxRounds == 0) maxRounds = 2;
 
-        if(LobbyManager.Instance.IsLobbyHost()){
+        if(playerScript.IsHostPlayer()){
 
-            currentArtist.Value = OwnerClientId;
+            currentArtist.Value = playerScript.OwnerClientIdPlayer();
             currentArtistIndex = 0;
-            clientIdQueue.Add(OwnerClientId);
-            lobbyCodeTxt.text += "\nI am host - "+OwnerClientId;
+            clientIdQueue.Add(playerScript.OwnerClientIdPlayer());
+            lobbyCodeTxt.text += "\nI am host - "+playerScript.OwnerClientIdPlayer();
             lobbyCodeTxt.text += "\ntotal players - "+clientIdQueue.Count;
-        }else{
+        }else if(playerScript.IsClientPlayer()){
             //debug 
             //testVar.Value++;
 
             //if(IsClient) lobbyCodeTxt.text += "\ni am client "+OwnerClientId.ToString();
             //else lobbyCodeTxt.text += "\ni am not client "+OwnerClientId.ToString();
             //while(!IsClient){}
-            lobbyCodeTxt.text += "\ni am client "+OwnerClientId.ToString();
+            lobbyCodeTxt.text += "\ni am client "+playerScript.OwnerClientIdPlayer().ToString();
             playerScript.AddMeToQueue();
             if(!isWaiting.Value){ // auto switch to guessing mode if not waiting
                 gameMode=1;
@@ -93,6 +95,10 @@ public class RoomManager : NetworkBehaviour{
                 Debug.Log("guessing mode");
                 lobbyCodeTxt.text += "\nguessing mode";
             } 
+        }else{
+            lobbyCodeTxt.text += "\n not host not client"; 
+            isInitializing = false;
+            return;
         }
         lobbyCodeTxt.text += "\n"+LobbyManager.Instance.joinedLobby.LobbyCode;
         lobbyCodeTxt.text += "\n relay code - "+LobbyManager.Instance.joinedLobby.Data["RelayCode"].Value;
@@ -100,8 +106,7 @@ public class RoomManager : NetworkBehaviour{
         isInitialized = true;
     }
 
-    [ServerRpc]
-    public void AddMeToQueueServerRpc(ulong _clientId){
+    public void AddMeToQueue(ulong _clientId){
         lobbyCodeTxt.text += "\ncalled server rpc";
         clientIdQueue.Add(_clientId);
         lobbyCodeTxt.text += "\nnew player joined. total = "+clientIdQueue.Count;
@@ -113,7 +118,7 @@ public class RoomManager : NetworkBehaviour{
             lobbyCodeTxt.text += "\nno player";
             return;
         } 
-        //if(!isInitialized && isStartinitialise) InitializeGame(); debug comment
+        if(!isInitialized && !isInitializing &&  isStartinitialise) InitializeGame();
         
         timeTxt.text = ((int)timer.Value).ToString() + "s";
         if(!isGameStarted) return;
@@ -144,7 +149,7 @@ public class RoomManager : NetworkBehaviour{
                         lobbyCodeTxt.text += "\nnext round";
                     }
                     timer.Value = maxDrawingTime;
-                    ChangeGameModeClientRpc();
+                    playerScript.ChangeGameMode();
                 }else{
                     isWaiting.Value = true;
                 }
@@ -158,9 +163,8 @@ public class RoomManager : NetworkBehaviour{
         }
     }
 
-    [ClientRpc]
-    void ChangeGameModeClientRpc(){
-        if(currentArtist.Value == OwnerClientId){
+    public void ChangeGameMode(){
+        if(currentArtist.Value == playerScript.OwnerClientIdPlayer()){
             //load drawing mode
             gameMode = 2;
             //debug

@@ -17,7 +17,11 @@ public class PlayerDummyScript : NetworkBehaviour {
     }
 
     public void AddMeToQueue(){
-        RoomManager.Instance.AddMeToQueueServerRpc(OwnerClientId);
+        AddToQueueServerRpc();
+    }
+    [ServerRpc]
+    public void AddToQueueServerRpc(){
+        RoomManager.Instance.AddMeToQueue(OwnerClientId);
     }
 
     private void Update() {
@@ -31,12 +35,30 @@ public class PlayerDummyScript : NetworkBehaviour {
     [ServerRpc]
     void AddLogServerRpc(string s){
         RoomManager.Instance.AddLog(s);
-        log.text += "tryed in roommanager";
     }
 
     [ServerRpc]
     void DebugServerRpc(){
         log.text += "\nplayer touched";
+    }
+
+    public void ChangeGameMode(){
+        ChangeGameModeClientRpc();
+    }
+
+    [ClientRpc]
+    void ChangeGameModeClientRpc(){
+        RoomManager.Instance.ChangeGameMode();
+    }
+
+    public bool IsClientPlayer(){
+        return IsClient?true:false;
+    }
+    public bool IsHostPlayer(){
+        return IsHost?true:false;
+    }
+    public ulong OwnerClientIdPlayer(){
+        return OwnerClientId;
     }
 }
 
