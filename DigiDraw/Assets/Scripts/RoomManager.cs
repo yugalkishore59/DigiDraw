@@ -75,13 +75,13 @@ public class RoomManager : NetworkBehaviour{
         if(clientIdList.Count < 2){
             if(!isWaiting.Value){
                 isWaiting.Value = true;     
-                GameHandler.Instance.ChangeGameMode(0);
+                playerScript.ChangeGameModeClientRpc();
             }     
         }else if(timer.Value<=0){
             if(!isWaiting.Value){
                 if(round<=maxRounds){
                     currentArtist.Value = clientIdList[currentArtistIndex];
-                    currentArtistIndex++;
+                    currentArtistIndex+=1;
                     if(currentArtistIndex>=clientIdList.Count){
                         currentArtistIndex=0;
                         round++;
@@ -95,7 +95,7 @@ public class RoomManager : NetworkBehaviour{
                 //start new game
                 if(!isStartingNewGame){
                     isStartingNewGame = true;
-                    StartNewGame();
+                    StartCoroutine(StartNewGame());
                 }
             }
             
@@ -106,23 +106,19 @@ public class RoomManager : NetworkBehaviour{
 
     public void ChangeGameMode(){
         if(isWaiting.Value) GameHandler.Instance.ChangeGameMode(0); //waiting
-        else if(currentArtist.Value != playerScript.OwnerClientIdPlayer()) GameHandler.Instance.ChangeGameMode(1); //guessing
+        else if(playerScript.OwnerClientIdPlayer()!=currentArtist.Value) GameHandler.Instance.ChangeGameMode(1); //guessing
         else GameHandler.Instance.ChangeGameMode(2); //drawing
     }
 
-    private void StartNewGame(){
+    private IEnumerator StartNewGame(){
         //TODO : send message new game starts in 5 sec
         playerScript.ChangeGameModeClientRpc();
-        StartCoroutine(WaitFor(maxWaitingTime));
+        yield return new WaitForSeconds(maxWaitingTime);
         round = 1;
         currentArtistIndex = 0;
         isWaiting.Value = false;
-        StartCoroutine(WaitFor(1)); // making sure new game starts before isStartingNewGame=false
+        yield return new WaitForSeconds(1); // making sure new game starts before isStartingNewGame=false
         isStartingNewGame = false;
-    }
-
-    private IEnumerator WaitFor(int _sec){
-        yield return new WaitForSeconds(_sec);
     }
 
 }
