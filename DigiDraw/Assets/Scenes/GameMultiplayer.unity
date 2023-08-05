@@ -1876,9 +1876,10 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 636341277}
-    PlayerPrefab: {fileID: 0}
+    PlayerPrefab: {fileID: 1130725835363770203, guid: 650df893e9c98c1448a178500e62ee6b, type: 3}
     Prefabs:
-      NetworkPrefabsLists: []
+      NetworkPrefabsLists:
+      - {fileID: 11400000, guid: acd5916047533f040bad5eca703a916b, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -3299,7 +3300,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1284567732}
   m_CullTransparentMesh: 1
---- !u!1 &1302542049
+--- !u!1 &1367314673
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3307,23 +3308,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1302542050}
-  - component: {fileID: 1302542052}
-  - component: {fileID: 1302542051}
+  - component: {fileID: 1367314674}
+  - component: {fileID: 1367314676}
+  - component: {fileID: 1367314675}
   m_Layer: 5
   m_Name: Debugtxt (1)
-  m_TagString: Untagged
+  m_TagString: log
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1302542050
+--- !u!224 &1367314674
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1302542049}
+  m_GameObject: {fileID: 1367314673}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -3333,16 +3334,16 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 250}
-  m_SizeDelta: {x: 0, y: -500}
+  m_AnchoredPosition: {x: -250, y: 0}
+  m_SizeDelta: {x: -500, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1302542051
+--- !u!114 &1367314675
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1302542049}
+  m_GameObject: {fileID: 1367314673}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -3356,7 +3357,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: var
+  m_text: p
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3425,13 +3426,13 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &1302542052
+--- !u!222 &1367314676
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1302542049}
+  m_GameObject: {fileID: 1367314673}
   m_CullTransparentMesh: 1
 --- !u!1 &1401823897
 GameObject:
@@ -4553,7 +4554,7 @@ RectTransform:
   - {fileID: 323272262}
   - {fileID: 2131380255}
   - {fileID: 1099686832}
-  - {fileID: 1302542050}
+  - {fileID: 1367314674}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4772,7 +4773,6 @@ MonoBehaviour:
   guessingMode: {fileID: 1745258832}
   timeTxt: {fileID: 323272260}
   lobbyCodeTxt: {fileID: 1099686833}
-  testvartxt: {fileID: 1302542051}
 --- !u!114 &1998124474
 MonoBehaviour:
   m_ObjectHideFlags: 0

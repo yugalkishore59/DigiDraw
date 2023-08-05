@@ -12,12 +12,16 @@ using System.Threading.Tasks;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Lobbies;
 
-public class RelayManager : MonoBehaviour{
+public class RelayManager : NetworkBehaviour{
     public static RelayManager Instance {get; private set;}
 
     private void Awake() {
         Instance = this;
         //TODO : add exceptions to handle errors
+        
+    }
+
+    private void Start() {
         StartGame();
     }
 
@@ -37,7 +41,8 @@ public class RelayManager : MonoBehaviour{
             }
             JoinRelay(_relayCode);
         }
-        RoomManager.Instance.InitializeGame();
+        //RoomManager.Instance.InitializeGame();
+        RoomManager.Instance.Startinitialise();
     }
 
      private async Task<string> CreateRelay(){
@@ -57,7 +62,6 @@ public class RelayManager : MonoBehaviour{
 
     private async void JoinRelay(string joinCode){
         try{
-            await RelayService.Instance.JoinAllocationAsync(joinCode);
             Debug.Log(joinCode);
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
             RelayServerData relayServerData = new RelayServerData(joinAllocation,"dtls");
