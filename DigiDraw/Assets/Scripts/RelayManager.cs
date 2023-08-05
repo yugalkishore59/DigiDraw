@@ -41,8 +41,6 @@ public class RelayManager : NetworkBehaviour{
             }
             JoinRelay(_relayCode);
         }
-        //RoomManager.Instance.InitializeGame();
-        RoomManager.Instance.Startinitialise();
     }
 
      private async Task<string> CreateRelay(){

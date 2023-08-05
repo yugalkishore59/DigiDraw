@@ -40,7 +40,6 @@ public class LobbiesUiScript : MonoBehaviour{
             Destroy(c.gameObject);
         }
         Instantiate(freeDoodleCard,lobbyCardContainer);
-        StartCoroutine(TimerCoroutine(2)); //wait 2 sec to fetch lobby list
         foreach(Lobby lobby in LobbyManager.Instance.lobbyList){
             Transform card =Instantiate(lobbyCard,lobbyCardContainer);
             string _players = (lobby.MaxPlayers-lobby.AvailableSlots).ToString()+"/"+(lobby.MaxPlayers).ToString();
@@ -79,9 +78,5 @@ public class LobbiesUiScript : MonoBehaviour{
         else if (_maxTime <30) _maxTime=90;
 
         LobbyManager.Instance.CreateLobby(_name,_maxPlayers,isPrivate,_maxRounds,_maxTime);
-    }
-
-    private IEnumerator TimerCoroutine(int timerDuration){
-        yield return new WaitForSeconds(timerDuration);
     }
 }

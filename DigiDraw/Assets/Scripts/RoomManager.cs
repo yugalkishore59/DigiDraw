@@ -7,10 +7,131 @@ using TMPro;
 
 public class RoomManager : NetworkBehaviour{
     public static RoomManager Instance {get; private set;}
-    public int currentTool = 0; // 0 pen, 1 eraser, 2 fill, 3 lens
-    public Color32 currentColor = new Color32(255, 255, 255, 255);
 
-    private static int maxDrawingTime = 90; //90sec
+    private PlayerDummyScript playerScript=null;
+    private bool isInitialized = false;
+    private bool isStartingNewGame = false;
+
+    private List<ulong> clientIdList = new List<ulong>();
+    private int currentArtistIndex = 0;
+    private int round = 1; 
+    private int maxRounds = 2;
+    private int maxDrawingTime = 90;
+    private int maxWaitingTime = 5;
+
+    private NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>(); //who is drawing now
+    private NetworkVariable<float> timer = new NetworkVariable<float>();
+    private NetworkVariable<bool> isWaiting = new NetworkVariable<bool>();
+
+    [SerializeField] TextMeshProUGUI timeTxt;
+
+    private void Awake() {
+        Instance = this;
+    }
+
+    public void GetPlayerScript(PlayerDummyScript _script){
+        playerScript = _script;
+        InitializeGame();
+    }
+
+    public void InitializeGame(){
+        int.TryParse(LobbyManager.Instance.joinedLobby.Data["MaxDrawingTime"].Value,out maxDrawingTime);
+        int.TryParse(LobbyManager.Instance.joinedLobby.Data["MaxRounds"].Value,out maxRounds);
+
+        if(maxDrawingTime == 0) maxDrawingTime = 90;
+        if(maxRounds == 0) maxRounds = 2;
+
+        if(playerScript.IsHostPlayer()){
+            currentArtist.Value = playerScript.OwnerClientIdPlayer();
+            currentArtistIndex = 0;
+            clientIdList.Add(playerScript.OwnerClientIdPlayer());
+
+            //making lobby visible to others if not made private
+            bool _isPrivate = LobbyManager.Instance.joinedLobby.Data["IsPrivate"].Value == "true";
+            LobbyManager.Instance.ChangeLobbyVisibility(_isPrivate);
+        }else{
+            playerScript.AddMeToListServerRpc();
+            //set gamemode accordingly
+            if(isWaiting.Value) GameHandler.Instance.ChangeGameMode(0);
+            else GameHandler.Instance.ChangeGameMode(1);
+        }
+        isInitialized = true;
+        //TODO : share lobby code
+    }
+
+    public void AddMeToList(ulong _id){
+        clientIdList.Add(_id);
+    }
+
+    private void Update() {
+        if(!isInitialized) return;
+        timeTxt.text = ((int)timer.Value).ToString() + "s";
+        if(!playerScript.IsHostPlayer()) return;
+
+        HandleTurns();
+    }
+
+    public void HandleTurns(){
+        if(clientIdList.Count < 2){
+            if(!isWaiting.Value){
+                isWaiting.Value = true;     
+                GameHandler.Instance.ChangeGameMode(0);
+            }     
+        }else if(timer.Value<=0){
+            if(!isWaiting.Value){
+                if(round<=maxRounds){
+                    currentArtist.Value = clientIdList[currentArtistIndex];
+                    currentArtistIndex++;
+                    if(currentArtistIndex>=clientIdList.Count){
+                        currentArtistIndex=0;
+                        round++;
+                    }
+                    playerScript.ChangeGameModeClientRpc();
+                    timer.Value = maxDrawingTime;
+                }else{
+                    isWaiting.Value = true;
+                }
+            }else{
+                //start new game
+                if(!isStartingNewGame){
+                    isStartingNewGame = true;
+                    StartNewGame();
+                }
+            }
+            
+        }else{
+            timer.Value-=Time.deltaTime;
+        }
+    }
+
+    public void ChangeGameMode(){
+        if(isWaiting.Value) GameHandler.Instance.ChangeGameMode(0); //waiting
+        else if(currentArtist.Value != playerScript.OwnerClientIdPlayer()) GameHandler.Instance.ChangeGameMode(1); //guessing
+        else GameHandler.Instance.ChangeGameMode(2); //drawing
+    }
+
+    private void StartNewGame(){
+        //TODO : send message new game starts in 5 sec
+        playerScript.ChangeGameModeClientRpc();
+        StartCoroutine(WaitFor(maxWaitingTime));
+        round = 1;
+        currentArtistIndex = 0;
+        isWaiting.Value = false;
+        StartCoroutine(WaitFor(1)); // making sure new game starts before isStartingNewGame=false
+        isStartingNewGame = false;
+    }
+
+    private IEnumerator WaitFor(int _sec){
+        yield return new WaitForSeconds(_sec);
+    }
+
+}
+
+
+
+
+    //old script
+    /*private static int maxDrawingTime = 90; //90sec
     private static int maxWaitingTime = 10; //10sec
 
 
@@ -204,4 +325,4 @@ public class RoomManager : NetworkBehaviour{
     private IEnumerator TimerCoroutine(int timerDuration){
         yield return new WaitForSeconds(timerDuration);
     }
-}
+}*/

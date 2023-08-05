@@ -6,8 +6,34 @@ using TMPro;
 
 public class PlayerDummyScript : NetworkBehaviour {
 
+    private void Start() {
+        if(IsOwner){
+            RoomManager.Instance.GetPlayerScript(gameObject.GetComponent<PlayerDummyScript>());
+        }
+    }
 
-    TextMeshProUGUI log;
+    [ServerRpc]
+    public void AddMeToListServerRpc(){
+        RoomManager.Instance.AddMeToList(OwnerClientId);
+    }
+
+    [ClientRpc]
+    public void ChangeGameModeClientRpc(){
+        RoomManager.Instance.ChangeGameMode();
+    }
+
+    public bool IsClientPlayer(){
+        return IsClient?true:false;
+    }
+    public bool IsHostPlayer(){
+        return IsHost?true:false;
+    }
+    public ulong OwnerClientIdPlayer(){
+        return OwnerClientId;
+    }
+
+    //old script
+    /*TextMeshProUGUI log;
     private void Start() {
         log = GameObject.FindWithTag("log").GetComponent<TextMeshProUGUI>();
         transform.position = new Vector3(Random.Range(-7,7),Random.Range(-7,7));
@@ -59,6 +85,6 @@ public class PlayerDummyScript : NetworkBehaviour {
     }
     public ulong OwnerClientIdPlayer(){
         return OwnerClientId;
-    }
+    }*/
 }
 

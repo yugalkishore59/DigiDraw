@@ -95,12 +95,13 @@ public class LobbyManager : MonoBehaviour{
     public async void CreateLobby(string lobbyName, int maxPlayers, bool _isPrivate, int _maxRounds = 2, int _maxDrawingTime=90) {
         try{
             CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions{
-                IsPrivate = _isPrivate,
+                IsPrivate = true,
                 Player = GetPlayer(),
                 Data = new Dictionary<string, DataObject>{
                     {"RelayCode", new DataObject(DataObject.VisibilityOptions.Public,"0")},
-                    {"MaxDrawingTime",new DataObject(DataObject.VisibilityOptions.Public,_maxDrawingTime.ToString())},
-                    {"MaxRounds",new DataObject(DataObject.VisibilityOptions.Public,_maxRounds.ToString())}
+                    {"MaxDrawingTime",new DataObject(DataObject.VisibilityOptions.Member,_maxDrawingTime.ToString())},
+                    {"MaxRounds",new DataObject(DataObject.VisibilityOptions.Member,_maxRounds.ToString())},
+                    {"IsPrivate", new DataObject(DataObject.VisibilityOptions.Member,_isPrivate.ToString())}
                 }
             };
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName,maxPlayers,createLobbyOptions);
@@ -134,7 +135,6 @@ public class LobbyManager : MonoBehaviour{
 
             QueryResponse lobbyListQueryResponse = await Lobbies.Instance.QueryLobbiesAsync();
             lobbyList = lobbyListQueryResponse.Results;
-            //TODO : update ui
         } catch (LobbyServiceException e) {
             Debug.Log(e);
         }
@@ -211,6 +211,14 @@ public class LobbyManager : MonoBehaviour{
                 Debug.Log(e);
             }
         }
+    }
+
+    public async void ChangeLobbyVisibility(bool _isPrivate){
+        UpdateLobbyOptions options = new UpdateLobbyOptions();
+        options.IsPrivate = _isPrivate;
+        string playerId = AuthenticationService.Instance.PlayerId;
+        Lobby _lobby = await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id,options);
+        joinedLobby = _lobby;
     }
 
 }
