@@ -29,6 +29,10 @@ public class RoomManager : NetworkBehaviour{
         Instance = this;
     }
 
+    private void Start() {
+        currentArtist.OnValueChanged += OnSomeValueChanged;
+    }
+
     public void GetPlayerScript(PlayerDummyScript _script){
         playerScript = _script;
         InitializeGame();
@@ -42,7 +46,7 @@ public class RoomManager : NetworkBehaviour{
         if(maxRounds == 0) maxRounds = 2;
 
         if(playerScript.IsHostPlayer()){
-            currentArtist.Value = playerScript.OwnerClientIdPlayer();
+            currentArtist.Value = (ulong)LobbyManager.Instance.joinedLobby.MaxPlayers;
             currentArtistIndex = 0;
             clientIdList.Add(playerScript.OwnerClientIdPlayer());
 
@@ -80,14 +84,16 @@ public class RoomManager : NetworkBehaviour{
         }else if(timer.Value<=0){
             if(!isWaiting.Value){
                 if(round<=maxRounds){
+                    timer.Value = maxDrawingTime;
                     currentArtist.Value = clientIdList[currentArtistIndex];
                     currentArtistIndex+=1;
                     if(currentArtistIndex>=clientIdList.Count){
                         currentArtistIndex=0;
                         round++;
                     }
-                    playerScript.ChangeGameModeClientRpc();
-                    timer.Value = maxDrawingTime;
+                    // i think currentArtist.Value didnot synced before this funcion
+                    //DEBUG COMMENT
+                    //playerScript.ChangeGameModeClientRpc();
                 }else{
                     isWaiting.Value = true;
                 }
@@ -104,7 +110,12 @@ public class RoomManager : NetworkBehaviour{
         }
     }
 
+    private void OnSomeValueChanged(ulong previous, ulong current){
+       ChangeGameMode();
+    }
+
     public void ChangeGameMode(){
+        // i think currentArtist.Value didnot synced before this funcion
         if(isWaiting.Value) GameHandler.Instance.ChangeGameMode(0); //waiting
         else if(playerScript.OwnerClientIdPlayer()!=currentArtist.Value) GameHandler.Instance.ChangeGameMode(1); //guessing
         else GameHandler.Instance.ChangeGameMode(2); //drawing
