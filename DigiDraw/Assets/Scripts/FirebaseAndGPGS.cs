@@ -9,6 +9,7 @@ using GooglePlayGames.BasicApi;
 using UnityEngine.SocialPlatforms;
 using System.Threading.Tasks;
 using TMPro;
+using Firebase.Firestore;
 
 
 
@@ -134,4 +135,10 @@ public class FirebaseAndGPGS : MonoBehaviour{
             }
         });
     }
+    /*
+    public void UpdateFirestoreLobbyData(FirebaseLobbyStruct firebaseLobbyStruct, string lobbyDataPath = "Lobbies/Regular"){
+        FirebaseFirestore firestore = FirebaseFirestore.DefaultInstance;
+        firestore.Document(lobbyDataPath).SetAsync(firebaseLobbyStruct);
+    }
+    */
 }
