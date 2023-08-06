@@ -59,7 +59,8 @@ public class CustomGrid {
             if(visited[y,x]) return;
             if(pixelArray[y,x].GetComponent<PixelScript>().pixelColor.Equals(defaultColor)){
                 //TODO : Sync color by server rpc
-                pixelArray[y,x].GetComponent<PixelScript>().SetColor(fillColor);
+                //pixelArray[y,x].GetComponent<PixelScript>().SetColor(fillColor);
+                RoomManager.Instance.GetPlayerDummyScript().SetColorServerRpc(y,x,fillColor);
                 visited[y,x] = true;
                 FloodFill(x+1,y,fillColor,defaultColor);
                 FloodFill(x-1,y,fillColor,defaultColor);
@@ -83,7 +84,8 @@ public class CustomGrid {
         for(int i=0;i<height;i++){
             for(int j=0;j<width;j++){
                 //TODO : Sync color by server rpc
-                pixelArray[i,j].GetComponent<PixelScript>().SetColor(new Color32(255,255,255,0));
+                //pixelArray[i,j].GetComponent<PixelScript>().SetColor(new Color32(255,255,255,0));
+                RoomManager.Instance.GetPlayerDummyScript().SetColorServerRpc(i,j,new Color32(255,255,255,0));
             }
         }
     }
@@ -104,11 +106,16 @@ public class CustomGrid {
     public void Undo(){
         for(int i=0;i<height;i++){
             for(int j=0;j<width;j++){
-                pixelScript = pixelArray[i, j].GetComponent<PixelScript>();
+                //pixelScript = pixelArray[i, j].GetComponent<PixelScript>();
                 //TODO : Sync color by server rpc
-                pixelScript.SetColor(colorArray[i,j]);
+                //pixelScript.SetColor(colorArray[i,j]);
+                RoomManager.Instance.GetPlayerDummyScript().SetColorServerRpc(i,j,colorArray[i,j]);
             }
         }
+    }
+
+    public void SetPixelColor(int i, int j, Color32 _color){
+        pixelArray[j,i].GetComponent<PixelScript>().SetColor(_color);
     }
 
 }

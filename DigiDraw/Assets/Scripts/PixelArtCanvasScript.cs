@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PixelArtCanvasScript : MonoBehaviour {
+    public static PixelArtCanvasScript Instance {get; private set;}
     CustomGrid customGrid;
     [SerializeField] int width = 16;
     [SerializeField] int height = 16;
@@ -13,6 +14,10 @@ public class PixelArtCanvasScript : MonoBehaviour {
     Touch touch;
     bool isUITouched = false;
     public bool isClearedCanvas = true;
+
+    private void Awake() {
+        Instance=this;
+    }
 
     void Start(){
         Vector3 origin = new Vector3(transform.position.x-7.5f,transform.position.y-7.5f,0);
@@ -48,13 +53,15 @@ public class PixelArtCanvasScript : MonoBehaviour {
                         if(pixelScript.pixelColor.Equals(GameHandler.Instance.currentColor)) break;
                         if(touch.phase == TouchPhase.Began) customGrid.SaveColors();
                         //TODO : Sync color by server rpc
-                        pixelScript.SetColor(GameHandler.Instance.currentColor);
+                        //pixelScript.SetColor(GameHandler.Instance.currentColor);
+                        RoomManager.Instance.GetPlayerDummyScript().SetColorServerRpc(pixelScript.xIndex,pixelScript.yIndex,GameHandler.Instance.currentColor);
                         break;
                     case 1 : // eraser
                         if(isClearedCanvas) break;
                         if(touch.phase == TouchPhase.Began) customGrid.SaveColors();
                         //TODO : Sync color by server rpc
-                        pixelScript.SetColor(new Color32(255, 255, 255, 0));
+                        //pixelScript.SetColor(new Color32(255, 255, 255, 0));
+                        RoomManager.Instance.GetPlayerDummyScript().SetColorServerRpc(pixelScript.xIndex,pixelScript.yIndex,new Color32(255, 255, 255, 0));
                         break;
                     case 2 : // fill
                         if(touch.phase == TouchPhase.Ended)
@@ -87,6 +94,10 @@ public class PixelArtCanvasScript : MonoBehaviour {
     public void Undo(){
         customGrid.Undo();
         isClearedCanvas = customGrid.isClearedCanvas();
+    }
+
+    public CustomGrid GetGrid(){
+        return customGrid;
     }
 
 }

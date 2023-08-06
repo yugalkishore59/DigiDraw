@@ -8,7 +8,7 @@ public class PlayerDummyScript : NetworkBehaviour {
 
     private void Start() {
         if(IsOwner){
-            RoomManager.Instance.GetPlayerScript(gameObject.GetComponent<PlayerDummyScript>());
+            RoomManager.Instance.SetPlayerScript(gameObject.GetComponent<PlayerDummyScript>());
         }
     }
 
@@ -30,6 +30,17 @@ public class PlayerDummyScript : NetworkBehaviour {
     }
     public ulong OwnerClientIdPlayer(){
         return OwnerClientId;
+    }
+
+    [ServerRpc]
+    public void SetColorServerRpc(int i, int j, Color32 _color){
+        SetColorClientRpc(i,j,_color);
+    }
+
+    [ClientRpc]
+    private void SetColorClientRpc(int i, int j, Color32 _color){
+        CustomGrid grid = PixelArtCanvasScript.Instance.GetGrid();
+        grid.SetPixelColor(i,j,_color);
     }
 
     //old script

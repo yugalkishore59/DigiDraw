@@ -33,9 +33,13 @@ public class RoomManager : NetworkBehaviour{
         currentArtist.OnValueChanged += OnSomeValueChanged;
     }
 
-    public void GetPlayerScript(PlayerDummyScript _script){
+    public void SetPlayerScript(PlayerDummyScript _script){
         playerScript = _script;
         InitializeGame();
+    }
+
+    public PlayerDummyScript GetPlayerDummyScript(){
+        return playerScript;
     }
 
     public void InitializeGame(){
