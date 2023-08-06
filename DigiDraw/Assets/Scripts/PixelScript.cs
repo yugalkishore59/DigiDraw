@@ -14,6 +14,7 @@ public class PixelScript : MonoBehaviour{
     }
 
     public void SetColor(Color32 _color){
+        //TODO : Sync color by server rpc
         pixelColor = _color;
         spriteRenderer.color = pixelColor;
     }

@@ -24,7 +24,6 @@ public class CustomGrid {
         for(int i=0;i<height;i++){
             for(int j=0;j<width;j++){
                 Vector3 pos = new Vector3(origin.x + j,origin.y +i ,0);
-                //need to instantiate on network
                 pixelArray[i,j]= GameObject.Instantiate(pixel,pos,Quaternion.identity);
                 pixelScript = pixelArray[i, j].GetComponent<PixelScript>();
                 colorArray[i,j] = new Color32(255, 255, 255, 0);
@@ -38,4 +37,78 @@ public class CustomGrid {
             }
         }
     }
+
+    public void SaveColors(){
+        for(int i=0;i<height;i++){
+            for(int j=0;j<width;j++){
+                pixelScript = pixelArray[i, j].GetComponent<PixelScript>();
+                colorArray[i,j] = pixelScript.pixelColor;
+            }
+        }
+        Debug.Log("color saved");
+    }
+
+    bool[,] visited;
+    public void Fill(int x, int y, Color32 fillColor, Color32 defaultColor){
+        visited = new bool[width,height];
+        FloodFill(x,y,fillColor,defaultColor);
+    }
+
+    void FloodFill(int x, int y, Color32 fillColor, Color32 defaultColor){
+        if(x<width && y<height && x>=0 && y>=0){
+            if(visited[y,x]) return;
+            if(pixelArray[y,x].GetComponent<PixelScript>().pixelColor.Equals(defaultColor)){
+                //TODO : Sync color by server rpc
+                pixelArray[y,x].GetComponent<PixelScript>().SetColor(fillColor);
+                visited[y,x] = true;
+                FloodFill(x+1,y,fillColor,defaultColor);
+                FloodFill(x-1,y,fillColor,defaultColor);
+                FloodFill(x,y+1,fillColor,defaultColor);
+                FloodFill(x,y-1,fillColor,defaultColor);
+            }
+        }
+    }
+
+    public bool isClearedCanvas(){
+        for(int i=0;i<height;i++){
+            for(int j=0;j<width;j++){
+                pixelScript = pixelArray[i, j].GetComponent<PixelScript>();
+                if(pixelScript.pixelColor.a != 0) return false;
+            }
+        }
+        return true;
+    }
+
+    public void ClearCanvas(){
+        for(int i=0;i<height;i++){
+            for(int j=0;j<width;j++){
+                //TODO : Sync color by server rpc
+                pixelArray[i,j].GetComponent<PixelScript>().SetColor(new Color32(255,255,255,0));
+            }
+        }
+    }
+
+    public byte[] SavePNG(){
+        Texture2D texture2D = new Texture2D(width,height,TextureFormat.RGBA32,false);
+        for(int i=0;i<height;i++){
+            for(int j=0;j<width;j++){
+                Color32 pixelColor = pixelArray[i,j].GetComponent<PixelScript>().pixelColor;
+                texture2D.SetPixel(j,i,pixelColor);
+            }
+        }
+        texture2D.Apply();
+        byte[] bytes = texture2D.EncodeToPNG();
+        return bytes;
+    }
+
+    public void Undo(){
+        for(int i=0;i<height;i++){
+            for(int j=0;j<width;j++){
+                pixelScript = pixelArray[i, j].GetComponent<PixelScript>();
+                //TODO : Sync color by server rpc
+                pixelScript.SetColor(colorArray[i,j]);
+            }
+        }
+    }
+
 }
