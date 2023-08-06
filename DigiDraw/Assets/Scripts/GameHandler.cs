@@ -10,9 +10,10 @@ public class GameHandler : MonoBehaviour{
 
     [SerializeField] GameObject guessingUI;
     [SerializeField] GameObject drawingUI;
+    [SerializeField] GameObject colorWheelBg;
 
     public int currentTool = 0; // 0 pen, 1 eraser, 2 fill, 3 lens
-    public Color32 currentColor = new Color32(255, 255, 255, 255);
+    public Color32 currentColor = new Color32(0, 0, 0, 255);
 
     [SerializeField] Image currentColorImage; 
 
@@ -21,6 +22,11 @@ public class GameHandler : MonoBehaviour{
     }
 
     public void ChangeGameMode(int mode){
+        PixelArtCanvasScript.Instance.GetGrid().ClearCanvas();
+        PixelArtCanvasScript.Instance.GetGrid().ResetColors();
+        currentTool=0;
+        currentColor = new Color32(0, 0, 0, 255);
+        currentColorImage.color = currentColor;
         gameMode = mode;
         switch(mode){
             case 0 : WaitingMode();
@@ -30,6 +36,7 @@ public class GameHandler : MonoBehaviour{
             case 2 : DrawingMode();
             break;
         }
+        colorWheelBg.SetActive(false);
     }
 
     private void WaitingMode(){

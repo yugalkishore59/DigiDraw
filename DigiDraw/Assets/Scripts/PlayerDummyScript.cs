@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using TMPro;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System;
 
 public class PlayerDummyScript : NetworkBehaviour {
 
@@ -43,6 +45,38 @@ public class PlayerDummyScript : NetworkBehaviour {
         grid.SetPixelColor(i,j,_color);
     }
 
+
+    // below code needs to be modified!! this is not syncing game properly for late comers
+    // Or i can make new player wait until turn switches
+
+    [ServerRpc]
+    public void RequestPixelDataServerRpc(ulong id){
+        //converting Color32[,] array into string
+
+        BinaryFormatter bf = new BinaryFormatter();
+        MemoryStream ms = new MemoryStream();
+        Color32[,] colorArray = PixelArtCanvasScript.Instance.GetGrid().colorArray;
+
+        bf.Serialize(ms, colorArray);
+        byte[] byteArray = ms.ToArray();
+        string serializedData = Convert.ToBase64String(byteArray);
+
+        ms.Close();
+        ReceivePixelDataClientRpc(serializedData);
+    }
+
+    [ClientRpc]
+    public void ReceivePixelDataClientRpc(string data){
+        BinaryFormatter bf = new BinaryFormatter();
+        byte[] byteArray = Convert.FromBase64String(data);
+        MemoryStream ms = new MemoryStream(byteArray);
+
+        Color32[,] colorArray = (Color32[,])bf.Deserialize(ms);
+        ms.Close();
+        PixelArtCanvasScript.Instance.GetGrid().colorArray = colorArray;
+        PixelArtCanvasScript.Instance.GetGrid().RestoreColors();
+
+    }
     //old script
     /*TextMeshProUGUI log;
     private void Start() {

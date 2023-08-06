@@ -48,20 +48,23 @@ public class PixelArtCanvasScript : MonoBehaviour {
 
             if (collider != null && collider.gameObject.tag == "Pixel"){
                 PixelScript pixelScript = collider.gameObject.GetComponent<PixelScript>();
+                PlayerDummyScript playerScript = RoomManager.Instance.GetPlayerDummyScript();
                 switch(GameHandler.Instance.currentTool){
                     case 0 : // pen
                         if(pixelScript.pixelColor.Equals(GameHandler.Instance.currentColor)) break;
                         if(touch.phase == TouchPhase.Began) customGrid.SaveColors();
-                        //TODO : Sync color by server rpc
-                        //pixelScript.SetColor(GameHandler.Instance.currentColor);
-                        RoomManager.Instance.GetPlayerDummyScript().SetColorServerRpc(pixelScript.xIndex,pixelScript.yIndex,GameHandler.Instance.currentColor);
+                        
+                        pixelScript.SetColor(GameHandler.Instance.currentColor); //setting own color
+                        //syncing color with other
+                        playerScript.SetColorServerRpc(pixelScript.yIndex,pixelScript.xIndex,GameHandler.Instance.currentColor);
                         break;
                     case 1 : // eraser
                         if(isClearedCanvas) break;
                         if(touch.phase == TouchPhase.Began) customGrid.SaveColors();
-                        //TODO : Sync color by server rpc
-                        //pixelScript.SetColor(new Color32(255, 255, 255, 0));
-                        RoomManager.Instance.GetPlayerDummyScript().SetColorServerRpc(pixelScript.xIndex,pixelScript.yIndex,new Color32(255, 255, 255, 0));
+
+                        pixelScript.SetColor(new Color32(255, 255, 255, 0)); //setting own color
+                        //syncing color with other
+                        playerScript.SetColorServerRpc(pixelScript.yIndex,pixelScript.xIndex,new Color32(255, 255, 255, 0));
                         break;
                     case 2 : // fill
                         if(touch.phase == TouchPhase.Ended)

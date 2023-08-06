@@ -24,13 +24,15 @@ public class RoomManager : NetworkBehaviour{
     private NetworkVariable<bool> isWaiting = new NetworkVariable<bool>();
 
     [SerializeField] TextMeshProUGUI timeTxt;
+    [SerializeField] TextMeshProUGUI lobbyCodeTxt;
+    [SerializeField] TextMeshProUGUI playerCountTxt;
 
     private void Awake() {
         Instance = this;
     }
 
     private void Start() {
-        currentArtist.OnValueChanged += OnSomeValueChanged;
+        currentArtist.OnValueChanged += OnSomeValueChanged; //added listner
     }
 
     public void SetPlayerScript(PlayerDummyScript _script){
@@ -49,6 +51,8 @@ public class RoomManager : NetworkBehaviour{
         if(maxDrawingTime == 0) maxDrawingTime = 90;
         if(maxRounds == 0) maxRounds = 2;
 
+        lobbyCodeTxt.text = LobbyManager.Instance.joinedLobby.LobbyCode;
+
         if(playerScript.IsHostPlayer()){
             currentArtist.Value = (ulong)LobbyManager.Instance.joinedLobby.MaxPlayers;
             currentArtistIndex = 0;
@@ -61,7 +65,12 @@ public class RoomManager : NetworkBehaviour{
             playerScript.AddMeToListServerRpc();
             //set gamemode accordingly
             if(isWaiting.Value) GameHandler.Instance.ChangeGameMode(0);
-            else GameHandler.Instance.ChangeGameMode(1);
+            else{
+                GameHandler.Instance.ChangeGameMode(1);
+                         
+                //below line is not working properly
+                playerScript.RequestPixelDataServerRpc(playerScript.OwnerClientIdPlayer());
+            }
         }
         isInitialized = true;
         //TODO : share lobby code
@@ -74,6 +83,9 @@ public class RoomManager : NetworkBehaviour{
     private void Update() {
         if(!isInitialized) return;
         timeTxt.text = ((int)timer.Value).ToString() + "s";
+        //below line can be optimised - ie, execute only if new player joins
+        playerCountTxt.text = (LobbyManager.Instance.joinedLobby.MaxPlayers - LobbyManager.Instance.joinedLobby.AvailableSlots).ToString()
+                                + "/" + LobbyManager.Instance.joinedLobby.MaxPlayers;
         if(!playerScript.IsHostPlayer()) return;
 
         HandleTurns();
