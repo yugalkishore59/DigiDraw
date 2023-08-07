@@ -65,12 +65,12 @@ public class RoomManager : NetworkBehaviour{
             playerScript.AddMeToListServerRpc();
             //set gamemode accordingly
             if(isWaiting.Value) GameHandler.Instance.ChangeGameMode(0);
-            else{
+            /*else{
                 GameHandler.Instance.ChangeGameMode(1);
                          
                 //below line is not working properly
                 playerScript.RequestPixelDataServerRpc(playerScript.OwnerClientIdPlayer());
-            }
+            }*/
         }
         isInitialized = true;
         //TODO : share lobby code

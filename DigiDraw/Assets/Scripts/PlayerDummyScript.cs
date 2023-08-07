@@ -48,7 +48,7 @@ public class PlayerDummyScript : NetworkBehaviour {
 
     // below code needs to be modified!! this is not syncing game properly for late comers
     // Or i can make new player wait until turn switches
-
+/*
     [ServerRpc]
     public void RequestPixelDataServerRpc(ulong id){
         //converting Color32[,] array into string
@@ -77,6 +77,10 @@ public class PlayerDummyScript : NetworkBehaviour {
         PixelArtCanvasScript.Instance.GetGrid().RestoreColors();
 
     }
+
+    */
+
+    
     //old script
     /*TextMeshProUGUI log;
     private void Start() {

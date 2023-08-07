@@ -28,6 +28,7 @@ public class GameHandler : MonoBehaviour{
         currentColor = new Color32(0, 0, 0, 255);
         currentColorImage.color = currentColor;
         gameMode = mode;
+        Camera.main.transform.position = new Vector3(0,-4,-10);
         switch(mode){
             case 0 : WaitingMode();
             break;

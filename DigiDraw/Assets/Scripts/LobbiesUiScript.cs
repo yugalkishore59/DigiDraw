@@ -21,10 +21,20 @@ public class LobbiesUiScript : MonoBehaviour{
     [SerializeField] Transform lobbyCard;
     [SerializeField] GameObject freeDoodleCard;
 
+    private float lobbyRefreshRate = 1f;
+
     //TODO: Add invisible layer to prevent multiple operations
 
     private void Start() {
         RefreshLobbyList();
+    }
+
+    private void Update() {
+        if(lobbyRefreshRate<=0){
+            RefreshLobbyList();
+        }else{
+            lobbyRefreshRate-= Time.deltaTime;
+        }
     }
 
     public void JoinLobbyByCode(){
@@ -45,7 +55,7 @@ public class LobbiesUiScript : MonoBehaviour{
             string _players = (lobby.MaxPlayers-lobby.AvailableSlots).ToString()+"/"+(lobby.MaxPlayers).ToString();
             card.GetComponent<LobbyCardScript>().setData(lobby.Name,_players,lobby);
         }
-
+        lobbyRefreshRate = 1;
     }
 
     public void CreateNewLobby(){
