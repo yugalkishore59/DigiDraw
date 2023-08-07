@@ -93,9 +93,9 @@ public class GameHandler : MonoBehaviour{
         messageList.Add(newMessage);
         if(isDidiDraw){
             msg.text =  "<color=yellow><u><b>" +_sender + "</u> : </color> </b>" + _message;
-            return;
+        }else{
+            msg.text =  "<color=green><u><b>"+_sender+"</u> : </color> </b>" + _message;
         }
-        msg.text =  "<color=green><u><b>"+_sender+"</u> : </color> </b>" + _message;
 
         if (messageList.Count > maxMessages){
             // Delete the oldest message

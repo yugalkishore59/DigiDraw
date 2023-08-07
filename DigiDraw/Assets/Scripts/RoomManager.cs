@@ -85,6 +85,8 @@ public class RoomManager : NetworkBehaviour{
         }
         isInitialized = true;
         //TODO : share lobby code
+        _message = FirebaseAndGPGS.Instance.userName+" joined the lobby";
+        playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
     }
 
     public void AddMeToList(ulong _id){
