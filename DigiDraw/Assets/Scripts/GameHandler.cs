@@ -21,17 +21,14 @@ public class GameHandler : MonoBehaviour{
     [SerializeField] GameObject messageContainer;
     [SerializeField] GameObject messageTxt;
     [SerializeField] private TMP_InputField messageInputField;
+    [SerializeField] private TextMeshProUGUI currentWordTxt;
 
     private List<GameObject> messageList = new List<GameObject>();
-    [SerializeField] int maxMessages = 20; //DEBUG : change it back to 20
+    private int maxMessages = 20; //DEBUG : change it back to 20
 
-    public string currentWord="";
     private List<string> easyWordList;
     private List<string> hardWordList;
     private List<string> mediumWordList;
-
-    //Debug
-    public TextMeshProUGUI logTxt;
      
 
     private void Awake() {
@@ -40,6 +37,7 @@ public class GameHandler : MonoBehaviour{
     }
 
     public void ChangeGameMode(int mode){
+        currentWordTxt.text = "";
         PixelArtCanvasScript.Instance.GetGrid().ClearCanvas();
         PixelArtCanvasScript.Instance.GetGrid().ResetColors();
         currentTool=0;
@@ -115,7 +113,16 @@ public class GameHandler : MonoBehaviour{
 
     public void SendNewMessageInputField(){
         string _message = messageInputField.text;
+        bool isEmpty=true;
+        //TODO : check and filter explicit words
+        foreach(char c in _message){
+            if(c !=' '){
+                isEmpty= false;
+                break;
+            }
+        }
         messageInputField.text = "";
+        if(isEmpty) return;
         PlayerDummyScript playerScript = RoomManager.Instance.GetPlayerDummyScript();
         //TODO: Check for gussed word
         //TODO: update score and ranking accordingly
@@ -131,12 +138,44 @@ public class GameHandler : MonoBehaviour{
         documentName="Hard";
         hardWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
         }catch{
-             logTxt.text = "error";
+             Debug.Log("error loading words data from firestore");
         }
     }
 
-    public void getNewWord(){
-        logTxt.text = easyWordList[Random.Range(0,easyWordList.Count-1)];
+    //only relay host can fetch new word
+    public void GetNewWord(){
+        //TODO: get current word according to difficulty
+        //for now ramdom difficulty
+
+        int dif = Random.Range(1,3);
+        switch(dif){
+            case 1 : GetEasyWord();
+            break;
+            case 2 : GetMediumWord();
+            break;
+            case 3 : GetHardWord();
+            break;
+        }
+        RoomManager.Instance.GetPlayerDummyScript().SetNewWordServerRpc();
+    }
+
+    private void GetEasyWord(){
+        RoomManager.Instance.currentWord.Value = easyWordList[Random.Range(0,easyWordList.Count-1)];
+        //TODO: change text according to hints
+    }
+
+    private void GetMediumWord(){
+        RoomManager.Instance.currentWord.Value = mediumWordList[Random.Range(0,mediumWordList.Count-1)];
+        //TODO: change text according to hints
+    }
+
+    private void GetHardWord(){
+        RoomManager.Instance.currentWord.Value = hardWordList[Random.Range(0,hardWordList.Count-1)];
+        //TODO: change text according to hints
+    }
+
+    public void SetNewWord(){
+        currentWordTxt.text = RoomManager.Instance.currentWord.Value.ToString();
     }
 
 }

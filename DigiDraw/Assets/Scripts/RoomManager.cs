@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
 using TMPro;
+using Unity.Collections;
 
 public class RoomManager : NetworkBehaviour{
     public static RoomManager Instance {get; private set;}
@@ -22,6 +23,7 @@ public class RoomManager : NetworkBehaviour{
     private NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>(); //who is drawing now
     private NetworkVariable<float> timer = new NetworkVariable<float>();
     private NetworkVariable<bool> isWaiting = new NetworkVariable<bool>();
+    public NetworkVariable<FixedString32Bytes> currentWord = new NetworkVariable<FixedString32Bytes>("");
 
     [SerializeField] TextMeshProUGUI timeTxt;
     [SerializeField] TextMeshProUGUI lobbyCodeTxt;
@@ -34,7 +36,7 @@ public class RoomManager : NetworkBehaviour{
     }
 
     private void Start() {
-        currentArtist.OnValueChanged += OnSomeValueChanged; //added listner
+        currentArtist.OnValueChanged += OnCurrentArtistValueChanged; //added listner
     }
 
     public void SetPlayerScript(PlayerDummyScript _script){
@@ -141,8 +143,9 @@ public class RoomManager : NetworkBehaviour{
         }
     }
 
-    private void OnSomeValueChanged(ulong previous, ulong current){
-       ChangeGameMode();
+    private void OnCurrentArtistValueChanged(ulong previous, ulong current){
+        ChangeGameMode();
+       if(playerScript.IsHostPlayer()) GameHandler.Instance.GetNewWord();
     }
 
     public void ChangeGameMode(){

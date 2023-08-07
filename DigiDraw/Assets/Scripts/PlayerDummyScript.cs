@@ -55,6 +55,16 @@ public class PlayerDummyScript : NetworkBehaviour {
         GameHandler.Instance.SendNewMessage(_message,_sender, isDidiDraw);
     }
 
+    [ServerRpc]
+    public void SetNewWordServerRpc(){
+        SetNewWordClientRpc();
+    }
+
+    [ClientRpc]
+    private void SetNewWordClientRpc(){
+        GameHandler.Instance.SetNewWord();
+    }
+
 
     // below code needs to be modified!! this is not syncing game properly for late comers
     // Or i can make new player wait until turn switches
