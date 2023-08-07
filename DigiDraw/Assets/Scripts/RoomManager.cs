@@ -27,6 +27,8 @@ public class RoomManager : NetworkBehaviour{
     [SerializeField] TextMeshProUGUI lobbyCodeTxt;
     [SerializeField] TextMeshProUGUI playerCountTxt;
 
+    string _message; //string to send messages in chatbox
+
     private void Awake() {
         Instance = this;
     }
@@ -52,6 +54,8 @@ public class RoomManager : NetworkBehaviour{
         if(maxRounds == 0) maxRounds = 2;
 
         lobbyCodeTxt.text = LobbyManager.Instance.joinedLobby.LobbyCode;
+        _message = "Joined lobby name - "+LobbyManager.Instance.joinedLobby.Name+", lobby code - "+LobbyManager.Instance.joinedLobby.LobbyCode;
+        playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
 
         if(playerScript.IsHostPlayer()){
             currentArtist.Value = (ulong)LobbyManager.Instance.joinedLobby.MaxPlayers;
@@ -64,7 +68,14 @@ public class RoomManager : NetworkBehaviour{
         }else{
             playerScript.AddMeToListServerRpc();
             //set gamemode accordingly
-            if(isWaiting.Value) GameHandler.Instance.ChangeGameMode(0);
+            if(isWaiting.Value){
+                GameHandler.Instance.ChangeGameMode(0);
+                _message = "Waiting for new game to start";
+                playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
+            }else{
+                _message = "Waiting for next turn";
+                playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
+            }
             /*else{
                 GameHandler.Instance.ChangeGameMode(1);
                          
@@ -96,6 +107,8 @@ public class RoomManager : NetworkBehaviour{
             if(!isWaiting.Value){
                 isWaiting.Value = true;     
                 playerScript.ChangeGameModeClientRpc();
+                _message = "Waiting for 1 more player";
+                playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
             }     
         }else if(timer.Value<=0){
             if(!isWaiting.Value){
@@ -107,11 +120,11 @@ public class RoomManager : NetworkBehaviour{
                         currentArtistIndex=0;
                         round++;
                     }
-                    // i think currentArtist.Value didnot synced before this funcion
-                    //DEBUG COMMENT
-                    //playerScript.ChangeGameModeClientRpc();
                 }else{
                     isWaiting.Value = true;
+                    //TODO: add ranking
+                    _message = "Congratulations!";
+                    playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
                 }
             }else{
                 //start new game
@@ -138,7 +151,8 @@ public class RoomManager : NetworkBehaviour{
     }
 
     private IEnumerator StartNewGame(){
-        //TODO : send message new game starts in 5 sec
+        _message = "New game will start in 5 seconds";
+        playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
         playerScript.ChangeGameModeClientRpc();
         yield return new WaitForSeconds(maxWaitingTime);
         round = 1;

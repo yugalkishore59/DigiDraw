@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameHandler : MonoBehaviour{
     public static GameHandler Instance {get; private set;}
@@ -16,6 +17,14 @@ public class GameHandler : MonoBehaviour{
     public Color32 currentColor = new Color32(0, 0, 0, 255);
 
     [SerializeField] Image currentColorImage; 
+
+    [SerializeField] GameObject messageContainer;
+    [SerializeField] GameObject messageTxt;
+    [SerializeField] private TMP_InputField messageInputField;
+
+    private List<GameObject> messageList = new List<GameObject>();
+    [SerializeField] int maxMessages = 5; //DEBUG : change it back to 20
+     
 
     private void Awake() {
         Instance = this;
@@ -49,6 +58,8 @@ public class GameHandler : MonoBehaviour{
         drawingUI.SetActive(false);
     }
     private void DrawingMode(){
+        string _message = FirebaseAndGPGS.Instance.userName + " is drawing";
+        RoomManager.Instance.GetPlayerDummyScript().SendNewMessageServerRpc(_message,"DigiDraw",true);
         guessingUI.SetActive(false);
         drawingUI.SetActive(true);
     }
@@ -74,6 +85,32 @@ public class GameHandler : MonoBehaviour{
         {
             Debug.LogError("Invalid hex code: " + hex);
         }
+    }
+
+    public void SendNewMessage(string _message, string _sender, bool isDidiDraw){
+        GameObject newMessage = Instantiate(messageTxt,messageContainer.transform);
+        TextMeshProUGUI msg = newMessage.GetComponent<TextMeshProUGUI>();
+        messageList.Add(newMessage);
+        if(isDidiDraw){
+            msg.text =  "<color=yellow><u><b>" +_sender + "</u> : </color> </b>" + _message;
+            return;
+        }
+        msg.text =  "<color=green><u><b>"+_sender+"</u> : </color> </b>" + _message;
+
+        if (messageList.Count > maxMessages){
+            // Delete the oldest message
+            Destroy(messageList[0]);
+            messageList.RemoveAt(0);
+        }
+    }
+
+    public void SendNewMessageInputField(){
+        string _message = messageInputField.text;
+        messageInputField.text = "";
+        PlayerDummyScript playerScript = RoomManager.Instance.GetPlayerDummyScript();
+        //TODO: Check for gussed word
+        //TODO: update score and ranking accordingly
+        playerScript.SendNewMessageServerRpc(_message,FirebaseAndGPGS.Instance.userName,false);
     }
 
 }

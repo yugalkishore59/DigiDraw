@@ -45,6 +45,16 @@ public class PlayerDummyScript : NetworkBehaviour {
         grid.SetPixelColor(i,j,_color);
     }
 
+    [ServerRpc]
+    public void SendNewMessageServerRpc(string _message, string _sender, bool isDidiDraw){
+        SendNewMessageClientRpc(_message,_sender, isDidiDraw);
+    }
+
+    [ClientRpc]
+    private void SendNewMessageClientRpc(string _message, string _sender, bool isDidiDraw){
+        GameHandler.Instance.SendNewMessage(_message,_sender, isDidiDraw);
+    }
+
 
     // below code needs to be modified!! this is not syncing game properly for late comers
     // Or i can make new player wait until turn switches
@@ -80,7 +90,7 @@ public class PlayerDummyScript : NetworkBehaviour {
 
     */
 
-    
+
     //old script
     /*TextMeshProUGUI log;
     private void Start() {
