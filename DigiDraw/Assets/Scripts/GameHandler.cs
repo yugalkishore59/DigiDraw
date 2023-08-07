@@ -23,11 +23,20 @@ public class GameHandler : MonoBehaviour{
     [SerializeField] private TMP_InputField messageInputField;
 
     private List<GameObject> messageList = new List<GameObject>();
-    [SerializeField] int maxMessages = 5; //DEBUG : change it back to 20
+    [SerializeField] int maxMessages = 20; //DEBUG : change it back to 20
+
+    public string currentWord="";
+    private List<string> easyWordList;
+    private List<string> hardWordList;
+    private List<string> mediumWordList;
+
+    //Debug
+    public TextMeshProUGUI logTxt;
      
 
     private void Awake() {
         Instance = this;
+        FetchWordList();
     }
 
     public void ChangeGameMode(int mode){
@@ -111,6 +120,23 @@ public class GameHandler : MonoBehaviour{
         //TODO: Check for gussed word
         //TODO: update score and ranking accordingly
         playerScript.SendNewMessageServerRpc(_message,FirebaseAndGPGS.Instance.userName,false);
+    }
+
+    private void FetchWordList(){
+        string documentName="Easy";
+        try{
+        easyWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
+        documentName="Medium";
+        mediumWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
+        documentName="Hard";
+        hardWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
+        }catch{
+             logTxt.text = "error";
+        }
+    }
+
+    public void getNewWord(){
+        logTxt.text = easyWordList[Random.Range(0,easyWordList.Count-1)];
     }
 
 }

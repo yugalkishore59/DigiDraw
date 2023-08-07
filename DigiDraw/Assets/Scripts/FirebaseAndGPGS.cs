@@ -10,6 +10,7 @@ using UnityEngine.SocialPlatforms;
 using System.Threading.Tasks;
 using TMPro;
 using Firebase.Firestore;
+using Firebase.Extensions;
 
 
 
@@ -134,6 +135,37 @@ public class FirebaseAndGPGS : MonoBehaviour{
                 Debug.LogWarning("Failed to report score.");
             }
         });
+    }
+
+    public List<string> FetchWordList(string documentName){
+        List<string> _list = new List<string>();
+        var db =FirebaseFirestore.DefaultInstance;
+        DocumentReference docRef = db.Collection("Words").Document(documentName);
+
+        // Get the document snapshot
+        docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>{
+            if (task.IsFaulted || task.IsCanceled){
+                Debug.LogError("Error fetching document: " + task.Exception);
+                return;
+            }
+
+            DocumentSnapshot snapshot = task.Result;
+            if (snapshot.Exists){
+                Dictionary<string, object> data = snapshot.ToDictionary();
+                    
+                    // Check if the field "WordArray" exists
+                    if (data.ContainsKey("WordArray")){
+                        // Convert the array to a list of strings
+                        List<object> wordArray = (List<object>)data["WordArray"];
+                        foreach (var item in wordArray){
+                            _list.Add(item.ToString());
+                        }
+                    }else{
+                        Debug.LogError("Document does not exist");
+                    }
+            }
+        });  
+        return _list;
     }
     /*
     public void UpdateFirestoreLobbyData(FirebaseLobbyStruct firebaseLobbyStruct, string lobbyDataPath = "Lobbies/Regular"){
