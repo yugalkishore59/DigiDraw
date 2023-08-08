@@ -64,6 +64,10 @@ public class LobbiesUiScript : MonoBehaviour{
 
     public void CancelCrateLobby(){
         createLobbyPanel.SetActive(false);
+        lobbyNameInputField.text = null;
+        maxPlayersInputField.text = null;
+        maxRoundsInputField.text = null;
+        maxTimeInputField.text = null;
     }
 
     public void QuickJoinLobby(){
@@ -76,7 +80,6 @@ public class LobbiesUiScript : MonoBehaviour{
         int.TryParse(maxPlayersInputField.text, out _maxPlayers);
         int.TryParse(maxRoundsInputField.text, out _maxRounds);
         int.TryParse(maxTimeInputField.text, out _maxTime);
-        bool isPrivate = isPrivateToggle.isOn;
 
         if(_maxPlayers > 16) _maxPlayers=16;
         else if (_maxPlayers <2 )_maxPlayers = 8;
@@ -87,6 +90,6 @@ public class LobbiesUiScript : MonoBehaviour{
         if(_maxTime >300) _maxTime=300;
         else if (_maxTime <30) _maxTime=90;
 
-        LobbyManager.Instance.CreateLobby(_name,_maxPlayers,isPrivate,_maxRounds,_maxTime);
+        LobbyManager.Instance.CreateLobby(_name,_maxPlayers,isPrivateToggle.isOn,_maxRounds,_maxTime);
     }
 }

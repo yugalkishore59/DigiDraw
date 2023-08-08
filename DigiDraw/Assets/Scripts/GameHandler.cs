@@ -22,10 +22,13 @@ public class GameHandler : MonoBehaviour{
     [SerializeField] GameObject messageTxt;
     [SerializeField] private TMP_InputField messageInputField;
     [SerializeField] private TextMeshProUGUI currentWordTxt;
+    [SerializeField] private TextMeshProUGUI currentHintTxt;
 
     private List<GameObject> messageList = new List<GameObject>();
-    private int maxMessages = 20; //DEBUG : change it back to 20
+    int maxMessages = 20; //DEBUG : change it back to 20
 
+    public string currentWord="";
+    public string currentHint = "";
     private List<string> easyWordList;
     private List<string> hardWordList;
     private List<string> mediumWordList;
@@ -33,11 +36,14 @@ public class GameHandler : MonoBehaviour{
 
     private void Awake() {
         Instance = this;
-        FetchWordList();
+    }
+
+    private void Update() {
+        currentWordTxt.text = currentWord;
+        currentHintTxt.text = currentHint;
     }
 
     public void ChangeGameMode(int mode){
-        currentWordTxt.text = "";
         PixelArtCanvasScript.Instance.GetGrid().ClearCanvas();
         PixelArtCanvasScript.Instance.GetGrid().ResetColors();
         currentTool=0;
@@ -129,25 +135,31 @@ public class GameHandler : MonoBehaviour{
         playerScript.SendNewMessageServerRpc(_message,FirebaseAndGPGS.Instance.userName,false);
     }
 
-    private void FetchWordList(){
-        string documentName="Easy";
+    public void FetchWordList(){
         try{
-        easyWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
-        documentName="Medium";
-        mediumWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
-        documentName="Hard";
-        hardWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
+            string documentName="Easy";
+            easyWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
+            documentName="Medium";
+            mediumWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
+            documentName="Hard";
+            hardWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
         }catch{
-             Debug.Log("error loading words data from firestore");
+            Debug.Log("error loading words data from firestore");
+            currentHintTxt.text = "error loading words data from firestore";
         }
     }
 
     //only relay host can fetch new word
+    //debug
+    int dif = 1;
     public void GetNewWord(){
         //TODO: get current word according to difficulty
         //for now ramdom difficulty
 
-        int dif = Random.Range(1,3);
+        //int dif = Random.Range(1,3);
+        //debug
+        dif++;
+        if(dif>3) dif=1;
         switch(dif){
             case 1 : GetEasyWord();
             break;
@@ -175,7 +187,8 @@ public class GameHandler : MonoBehaviour{
     }
 
     public void SetNewWord(){
-        currentWordTxt.text = RoomManager.Instance.currentWord.Value.ToString();
+        currentWord = RoomManager.Instance.currentWord.Value.ToString();
+        RoomManager.Instance.log.text+="set new word\n";
     }
 
 }

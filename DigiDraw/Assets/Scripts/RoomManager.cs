@@ -23,7 +23,7 @@ public class RoomManager : NetworkBehaviour{
     private NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>(); //who is drawing now
     private NetworkVariable<float> timer = new NetworkVariable<float>();
     private NetworkVariable<bool> isWaiting = new NetworkVariable<bool>();
-    public NetworkVariable<FixedString32Bytes> currentWord = new NetworkVariable<FixedString32Bytes>("");
+    public NetworkVariable<FixedString64Bytes> currentWord = new NetworkVariable<FixedString64Bytes>("");
 
     [SerializeField] TextMeshProUGUI timeTxt;
     [SerializeField] TextMeshProUGUI lobbyCodeTxt;
@@ -31,12 +31,15 @@ public class RoomManager : NetworkBehaviour{
 
     string _message; //string to send messages in chatbox
 
+    //debug
+    public TextMeshProUGUI log;
+
     private void Awake() {
         Instance = this;
     }
 
     private void Start() {
-        currentArtist.OnValueChanged += OnCurrentArtistValueChanged; //added listner
+        //currentArtist.OnValueChanged += OnCurrentArtistValueChanged; //added listner
     }
 
     public void SetPlayerScript(PlayerDummyScript _script){
@@ -65,8 +68,9 @@ public class RoomManager : NetworkBehaviour{
             clientIdList.Add(playerScript.OwnerClientIdPlayer());
 
             //making lobby visible to others if not made private
-            bool _isPrivate = LobbyManager.Instance.joinedLobby.Data["IsPrivate"].Value == "true";
+            bool _isPrivate = LobbyManager.Instance.joinedLobby.Data["IsPrivate"].Value == "True";
             LobbyManager.Instance.ChangeLobbyVisibility(_isPrivate);
+            GameHandler.Instance.FetchWordList();
         }else{
             playerScript.AddMeToListServerRpc();
             //set gamemode accordingly
@@ -85,6 +89,7 @@ public class RoomManager : NetworkBehaviour{
                 playerScript.RequestPixelDataServerRpc(playerScript.OwnerClientIdPlayer());
             }*/
         }
+        currentArtist.OnValueChanged += OnCurrentArtistValueChanged; //added listner
         isInitialized = true;
         //TODO : share lobby code
         _message = FirebaseAndGPGS.Instance.userName+" joined the lobby";
@@ -144,8 +149,11 @@ public class RoomManager : NetworkBehaviour{
     }
 
     private void OnCurrentArtistValueChanged(ulong previous, ulong current){
-        ChangeGameMode();
-       if(playerScript.IsHostPlayer()) GameHandler.Instance.GetNewWord();
+       ChangeGameMode();
+       if(playerScript.IsHostPlayer()){
+        log.text+="setting new word\n";
+        GameHandler.Instance.GetNewWord();
+       }
     }
 
     public void ChangeGameMode(){
