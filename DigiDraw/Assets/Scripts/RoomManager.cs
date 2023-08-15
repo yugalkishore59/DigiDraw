@@ -151,7 +151,7 @@ public class RoomManager : NetworkBehaviour{
     private void OnCurrentArtistValueChanged(ulong previous, ulong current){
        ChangeGameMode();
        if(playerScript.IsHostPlayer()){
-        log.text+="setting new word\n";
+        //log.text+="setting new word\n";
         GameHandler.Instance.GetNewWord();
        }
     }

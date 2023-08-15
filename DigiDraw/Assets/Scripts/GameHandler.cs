@@ -188,7 +188,7 @@ public class GameHandler : MonoBehaviour{
 
     public void SetNewWord(){
         currentWord = RoomManager.Instance.currentWord.Value.ToString();
-        RoomManager.Instance.log.text+="set new word\n";
+        //RoomManager.Instance.log.text+="set new word\n";
     }
 
 }
