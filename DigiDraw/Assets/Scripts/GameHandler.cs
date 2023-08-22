@@ -59,6 +59,7 @@ public class GameHandler : MonoBehaviour{
             break;
         }
         colorWheelBg.SetActive(false);
+        SetNewWord();
     }
 
     private void WaitingMode(){
@@ -150,7 +151,7 @@ public class GameHandler : MonoBehaviour{
 
     //only relay host can fetch new word
     //debug
-    int dif = 1;
+    int dif = 0;
     public void GetNewWord(){
         //TODO: get current word according to difficulty
         //for now ramdom difficulty

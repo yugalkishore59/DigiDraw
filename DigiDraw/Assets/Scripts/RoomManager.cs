@@ -13,14 +13,22 @@ public class RoomManager : NetworkBehaviour{
     private bool isInitialized = false;
     private bool isStartingNewGame = false;
 
-    private List<ulong> clientIdList = new List<ulong>();
-    private int currentArtistIndex = 0;
+    //debug comment make it private
+    //private List<ulong> clientIdList = new List<ulong>();
+    //private int currentArtistIndex = 0;
+
+    public List<ulong> clientIdList = new List<ulong>();
+    public int currentArtistIndex = 0;
+
     private int round = 1; 
     private int maxRounds = 2;
     private int maxDrawingTime = 90;
     private int maxWaitingTime = 5;
 
-    private NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>(); //who is drawing now
+    //debug comment make it private
+    //private NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>(); //who is drawing now
+    public NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>();
+
     private NetworkVariable<float> timer = new NetworkVariable<float>();
     private NetworkVariable<bool> isWaiting = new NetworkVariable<bool>();
     public NetworkVariable<FixedString64Bytes> currentWord = new NetworkVariable<FixedString64Bytes>("");
@@ -89,8 +97,8 @@ public class RoomManager : NetworkBehaviour{
                 playerScript.RequestPixelDataServerRpc(playerScript.OwnerClientIdPlayer());
             }*/
         }
-        currentArtist.OnValueChanged += OnCurrentArtistValueChanged; //added listner
-        currentWord.OnValueChanged += OnCurrentWordValueChanged;
+        //currentArtist.OnValueChanged += OnCurrentArtistValueChanged; //added listner
+        // currentWord.OnValueChanged += OnCurrentWordValueChanged;
         isInitialized = true;
         //TODO : share lobby code
         _message = FirebaseAndGPGS.Instance.userName+" joined the lobby";
@@ -130,6 +138,8 @@ public class RoomManager : NetworkBehaviour{
                         currentArtistIndex=0;
                         round++;
                     }
+                    GameHandler.Instance.GetNewWord();
+                    playerScript.ChangeGameModeClientRpc();
                 }else{
                     isWaiting.Value = true;
                     //TODO: add ranking
@@ -149,7 +159,7 @@ public class RoomManager : NetworkBehaviour{
         }
     }
 
-    private void OnCurrentArtistValueChanged(ulong previous, ulong current){
+    /*private void OnCurrentArtistValueChanged(ulong previous, ulong current){
        ChangeGameMode();
        if(!playerScript.IsHostPlayer()) return;
         //log.text+="setting new word\n";
@@ -158,7 +168,7 @@ public class RoomManager : NetworkBehaviour{
 
     private void OnCurrentWordValueChanged(FixedString64Bytes previous, FixedString64Bytes currebt){
         GameHandler.Instance.SetNewWord();
-    }
+    }*/
 
     public void ChangeGameMode(){
         // i think currentArtist.Value didnot synced before this funcion

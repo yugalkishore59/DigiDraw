@@ -5,6 +5,7 @@ using Unity.Netcode;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
+using Unity.Collections;
 
 public class PlayerDummyScript : NetworkBehaviour {
 
