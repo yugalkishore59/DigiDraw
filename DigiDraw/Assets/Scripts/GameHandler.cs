@@ -39,8 +39,7 @@ public class GameHandler : MonoBehaviour{
     }
 
     private void Update() {
-        currentWordTxt.text = currentWord;
-        currentHintTxt.text = currentHint;
+        //SetNewWord();
     }
 
     public void ChangeGameMode(int mode){
@@ -158,7 +157,7 @@ public class GameHandler : MonoBehaviour{
 
         //int dif = Random.Range(1,3);
         //debug
-        dif++;
+        dif+=1;
         if(dif>3) dif=1;
         switch(dif){
             case 1 : GetEasyWord();
@@ -168,7 +167,7 @@ public class GameHandler : MonoBehaviour{
             case 3 : GetHardWord();
             break;
         }
-        RoomManager.Instance.GetPlayerDummyScript().SetNewWordServerRpc();
+        //RoomManager.Instance.GetPlayerDummyScript().SetNewWordServerRpc();
     }
 
     private void GetEasyWord(){
@@ -187,8 +186,13 @@ public class GameHandler : MonoBehaviour{
     }
 
     public void SetNewWord(){
+        //if(currentWord != RoomManager.Instance.currentWord.Value.ToString()) return;
+
         currentWord = RoomManager.Instance.currentWord.Value.ToString();
         //RoomManager.Instance.log.text+="set new word\n";
+
+        currentWordTxt.text = currentWord;
+        currentHintTxt.text = currentHint;
     }
 
 }

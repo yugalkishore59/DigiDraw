@@ -25,10 +25,10 @@ public class PlayerDummyScript : NetworkBehaviour {
     }
 
     public bool IsClientPlayer(){
-        return IsClient?true:false;
+        return IsClient;
     }
     public bool IsHostPlayer(){
-        return IsHost?true:false;
+        return IsHost;
     }
     public ulong OwnerClientIdPlayer(){
         return OwnerClientId;
@@ -54,7 +54,7 @@ public class PlayerDummyScript : NetworkBehaviour {
     private void SendNewMessageClientRpc(string _message, string _sender, bool isDidiDraw){
         GameHandler.Instance.SendNewMessage(_message,_sender, isDidiDraw);
     }
-
+/*
     [ServerRpc]
     public void SetNewWordServerRpc(){
         SetNewWordClientRpc();
@@ -63,7 +63,7 @@ public class PlayerDummyScript : NetworkBehaviour {
     [ClientRpc]
     private void SetNewWordClientRpc(){
         GameHandler.Instance.SetNewWord();
-    }
+    }*/
 
 
     // below code needs to be modified!! this is not syncing game properly for late comers

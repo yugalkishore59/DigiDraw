@@ -90,6 +90,7 @@ public class RoomManager : NetworkBehaviour{
             }*/
         }
         currentArtist.OnValueChanged += OnCurrentArtistValueChanged; //added listner
+        currentWord.OnValueChanged += OnCurrentWordValueChanged;
         isInitialized = true;
         //TODO : share lobby code
         _message = FirebaseAndGPGS.Instance.userName+" joined the lobby";
@@ -150,10 +151,13 @@ public class RoomManager : NetworkBehaviour{
 
     private void OnCurrentArtistValueChanged(ulong previous, ulong current){
        ChangeGameMode();
-       if(playerScript.IsHostPlayer()){
+       if(!playerScript.IsHostPlayer()) return;
         //log.text+="setting new word\n";
         GameHandler.Instance.GetNewWord();
-       }
+    }
+
+    private void OnCurrentWordValueChanged(FixedString64Bytes previous, FixedString64Bytes currebt){
+        GameHandler.Instance.SetNewWord();
     }
 
     public void ChangeGameMode(){
