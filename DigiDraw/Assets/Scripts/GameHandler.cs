@@ -143,12 +143,11 @@ public class GameHandler : MonoBehaviour{
             mediumWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
             documentName="Hard";
             hardWordList = FirebaseAndGPGS.Instance.FetchWordList(documentName);
+            
         }catch{
             Debug.Log("error loading words data from firestore");
             currentHintTxt.text = "error loading words data from firestore";
         }
-
-        RoomManager.Instance.log.text+="easy "+easyWordList.Count + " medium "+ mediumWordList.Count + " hard "+hardWordList.Count+ "\n";
     }
 
     //only relay host can fetch new word
@@ -160,6 +159,7 @@ public class GameHandler : MonoBehaviour{
 
         //int dif = Random.Range(1,3);
         //debug
+        //RoomManager.Instance.log.text+="easy "+easyWordList.Count + " medium "+ mediumWordList.Count + " hard "+hardWordList.Count+ "\n";
         string newWord="";
         dif+=1;
         if(dif>3) dif=1;

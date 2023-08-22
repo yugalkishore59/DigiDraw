@@ -42,7 +42,7 @@ public class RoomManager : NetworkBehaviour{
     string _message; //string to send messages in chatbox
 
     //debug
-    public TextMeshProUGUI log;
+    //public TextMeshProUGUI log;
 
     private void Awake() {
         Instance = this;
@@ -144,13 +144,13 @@ public class RoomManager : NetworkBehaviour{
                         currentArtistIndex=0;
                         round++;
                     }
-                    log.text += "changed variables\n";
+                    //log.text += "changed variables\n";
                     currentWord =  GameHandler.Instance.GetNewWord();
-                    log.text += "changed word\n";
+                    //log.text += "changed word\n";
                     playerScript.ChangeGameModeClientRpc(currentArtistID,currentWord);
-                    log.text += "changed mode\n";
+                    //log.text += "changed mode\n";
                     timer.Value = maxDrawingTime;
-                    log.text += "changed time\n\n";
+                    //log.text += "changed time\n\n";
                 }else{
                     isWaiting.Value = true;
                     //TODO: add ranking
