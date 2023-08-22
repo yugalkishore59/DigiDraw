@@ -27,11 +27,13 @@ public class RoomManager : NetworkBehaviour{
 
     //debug comment make it private
     //private NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>(); //who is drawing now
-    public NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>();
+    //public NetworkVariable<ulong> currentArtist = new NetworkVariable<ulong>();
+    public ulong currentArtistID = 0;
 
     private NetworkVariable<float> timer = new NetworkVariable<float>();
     private NetworkVariable<bool> isWaiting = new NetworkVariable<bool>();
-    public NetworkVariable<FixedString64Bytes> currentWord = new NetworkVariable<FixedString64Bytes>("");
+    //public NetworkVariable<FixedString64Bytes> currentWord = new NetworkVariable<FixedString64Bytes>("");
+    public string currentWord = "";
 
     [SerializeField] TextMeshProUGUI timeTxt;
     [SerializeField] TextMeshProUGUI lobbyCodeTxt;
@@ -71,7 +73,8 @@ public class RoomManager : NetworkBehaviour{
         playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
 
         if(playerScript.IsHostPlayer()){
-            currentArtist.Value = (ulong)LobbyManager.Instance.joinedLobby.MaxPlayers;
+            //currentArtist.Value = (ulong)LobbyManager.Instance.joinedLobby.MaxPlayers;
+            currentArtistID = 0;
             currentArtistIndex = 0;
             clientIdList.Add(playerScript.OwnerClientIdPlayer());
 
@@ -120,26 +123,34 @@ public class RoomManager : NetworkBehaviour{
         HandleTurns();
     }
 
-    public void HandleTurns(){
+    //bool isChangingMode=false;
+    void HandleTurns(){
         if(clientIdList.Count < 2){
             if(!isWaiting.Value){
                 isWaiting.Value = true;     
-                playerScript.ChangeGameModeClientRpc();
+                playerScript.ChangeGameModeClientRpc(currentArtistID,currentWord);
                 _message = "Waiting for 1 more player";
                 playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
             }     
         }else if(timer.Value<=0){
+            //if(isChangingMode) return;
+            //isChangingMode = true;
             if(!isWaiting.Value){
-                if(round<=maxRounds){
-                    timer.Value = maxDrawingTime;
-                    currentArtist.Value = clientIdList[currentArtistIndex];
+                if(round<=maxRounds){           
+                    //currentArtist.Value = clientIdList[currentArtistIndex];
+                    currentArtistID = clientIdList[currentArtistIndex];
                     currentArtistIndex+=1;
                     if(currentArtistIndex>=clientIdList.Count){
                         currentArtistIndex=0;
                         round++;
                     }
-                    GameHandler.Instance.GetNewWord();
-                    playerScript.ChangeGameModeClientRpc();
+                    log.text += "changed variables\n";
+                    currentWord =  GameHandler.Instance.GetNewWord();
+                    log.text += "changed word\n";
+                    playerScript.ChangeGameModeClientRpc(currentArtistID,currentWord);
+                    log.text += "changed mode\n";
+                    timer.Value = maxDrawingTime;
+                    log.text += "changed time\n\n";
                 }else{
                     isWaiting.Value = true;
                     //TODO: add ranking
@@ -153,6 +164,7 @@ public class RoomManager : NetworkBehaviour{
                     StartCoroutine(StartNewGame());
                 }
             }
+            //isChangingMode=false;
             
         }else{
             timer.Value-=Time.deltaTime;
@@ -170,20 +182,24 @@ public class RoomManager : NetworkBehaviour{
         GameHandler.Instance.SetNewWord();
     }*/
 
-    public void ChangeGameMode(){
-        // i think currentArtist.Value didnot synced before this funcion
+    public void ChangeGameMode(ulong _currArtistID,string _currentWord){
+        currentArtistID = _currArtistID;
+        currentWord=_currentWord;
         if(isWaiting.Value) GameHandler.Instance.ChangeGameMode(0); //waiting
-        else if(playerScript.OwnerClientIdPlayer()!=currentArtist.Value) GameHandler.Instance.ChangeGameMode(1); //guessing
+        else if(playerScript.OwnerClientIdPlayer()!=currentArtistID) GameHandler.Instance.ChangeGameMode(1); //guessing
         else GameHandler.Instance.ChangeGameMode(2); //drawing
     }
 
     private IEnumerator StartNewGame(){
         _message = "New game will start in 5 seconds";
         playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
-        playerScript.ChangeGameModeClientRpc();
+
+
+        playerScript.ChangeGameModeClientRpc(currentArtistID,currentWord);
         yield return new WaitForSeconds(maxWaitingTime);
         round = 1;
         currentArtistIndex = 0;
+        //isChangingMode=false;
         isWaiting.Value = false;
         yield return new WaitForSeconds(1); // making sure new game starts before isStartingNewGame=false
         isStartingNewGame = false;

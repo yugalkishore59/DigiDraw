@@ -20,8 +20,8 @@ public class AaDebugScript : MonoBehaviour
     void Update()
     {
         indextxt.text = RoomManager.Instance.currentArtistIndex.ToString();
-        artisttxt.text = RoomManager.Instance.currentArtist.Value.ToString();
-        wordtxt.text = RoomManager.Instance.currentWord.Value.ToString();
+        artisttxt.text = RoomManager.Instance.currentArtistID.ToString();
+        wordtxt.text = RoomManager.Instance.currentWord;
         if(RoomManager.Instance.GetPlayerDummyScript()!=null)
             myid.text = RoomManager.Instance.GetPlayerDummyScript().OwnerClientIdPlayer().ToString();
         setArray();

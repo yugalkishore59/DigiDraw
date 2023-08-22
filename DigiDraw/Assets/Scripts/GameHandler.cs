@@ -147,49 +147,53 @@ public class GameHandler : MonoBehaviour{
             Debug.Log("error loading words data from firestore");
             currentHintTxt.text = "error loading words data from firestore";
         }
+
+        RoomManager.Instance.log.text+="easy "+easyWordList.Count + " medium "+ mediumWordList.Count + " hard "+hardWordList.Count+ "\n";
     }
 
     //only relay host can fetch new word
     //debug
     int dif = 0;
-    public void GetNewWord(){
+    public string GetNewWord(){
         //TODO: get current word according to difficulty
         //for now ramdom difficulty
 
         //int dif = Random.Range(1,3);
         //debug
+        string newWord="";
         dif+=1;
         if(dif>3) dif=1;
         switch(dif){
-            case 1 : GetEasyWord();
+            case 1 : newWord = GetEasyWord();
             break;
-            case 2 : GetMediumWord();
+            case 2 : newWord = GetMediumWord();
             break;
-            case 3 : GetHardWord();
+            case 3 : newWord = GetHardWord();
             break;
         }
         //RoomManager.Instance.GetPlayerDummyScript().SetNewWordServerRpc();
+        return newWord;
     }
 
-    private void GetEasyWord(){
-        RoomManager.Instance.currentWord.Value = easyWordList[Random.Range(0,easyWordList.Count-1)];
+    private string GetEasyWord(){
+        return easyWordList[Random.Range(0,easyWordList.Count-1)];
         //TODO: change text according to hints
     }
 
-    private void GetMediumWord(){
-        RoomManager.Instance.currentWord.Value = mediumWordList[Random.Range(0,mediumWordList.Count-1)];
+    private string GetMediumWord(){
+        return mediumWordList[Random.Range(0,mediumWordList.Count-1)];
         //TODO: change text according to hints
     }
 
-    private void GetHardWord(){
-        RoomManager.Instance.currentWord.Value = hardWordList[Random.Range(0,hardWordList.Count-1)];
+    private string GetHardWord(){
+        return hardWordList[Random.Range(0,hardWordList.Count-1)];
         //TODO: change text according to hints
     }
 
     public void SetNewWord(){
         //if(currentWord != RoomManager.Instance.currentWord.Value.ToString()) return;
 
-        currentWord = RoomManager.Instance.currentWord.Value.ToString();
+        currentWord = RoomManager.Instance.currentWord;
         //RoomManager.Instance.log.text+="set new word\n";
 
         currentWordTxt.text = currentWord;

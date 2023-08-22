@@ -21,8 +21,8 @@ public class PlayerDummyScript : NetworkBehaviour {
     }
 
     [ClientRpc]
-    public void ChangeGameModeClientRpc(){
-        RoomManager.Instance.ChangeGameMode();
+    public void ChangeGameModeClientRpc(ulong currentArtistID, string currentWord){
+        RoomManager.Instance.ChangeGameMode(currentArtistID,currentWord);
     }
 
     public bool IsClientPlayer(){
