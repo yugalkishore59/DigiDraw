@@ -32,6 +32,8 @@ public class GameHandler : MonoBehaviour{
     private List<string> easyWordList;
     private List<string> hardWordList;
     private List<string> mediumWordList;
+
+    public bool isGuessed = false;
      
 
     private void Awake() {
@@ -50,6 +52,7 @@ public class GameHandler : MonoBehaviour{
         currentColorImage.color = currentColor;
         gameMode = mode;
         Camera.main.transform.position = new Vector3(0,-4,-10);
+        isGuessed = false;
         switch(mode){
             case 0 : WaitingMode();
             break;
@@ -118,6 +121,10 @@ public class GameHandler : MonoBehaviour{
     }
 
     public void SendNewMessageInputField(){
+        if(isGuessed){
+            messageInputField.text = "";
+            return;
+        }
         string _message = messageInputField.text;
         bool isEmpty=true;
         //TODO : check and filter explicit words
@@ -130,9 +137,21 @@ public class GameHandler : MonoBehaviour{
         messageInputField.text = "";
         if(isEmpty) return;
         PlayerDummyScript playerScript = RoomManager.Instance.GetPlayerDummyScript();
-        //TODO: Check for gussed word
         //TODO: update score and ranking accordingly
+        //TODO: add more to check eg. half guess, 1 character remaining etc.
+        if(CheckGuess(_message)){
+            isGuessed = true;
+            _message = FirebaseAndGPGS.Instance.userName + " Guessed the word!";
+            int _newScore = 5; // TODO: properly assign value to score
+            playerScript.UpdateScoreServerRpc(FirebaseAndGPGS.Instance.userName, _newScore);
+            playerScript.SendNewMessageServerRpc(_message,FirebaseAndGPGS.Instance.userName,true);
+        }
         playerScript.SendNewMessageServerRpc(_message,FirebaseAndGPGS.Instance.userName,false);
+    }
+
+    private bool CheckGuess(string _message){
+        if(_message.ToLower() == currentWord.ToLower()) return true;
+        return false;
     }
 
     public void FetchWordList(){
@@ -199,5 +218,4 @@ public class GameHandler : MonoBehaviour{
         currentWordTxt.text = currentWord;
         currentHintTxt.text = currentHint;
     }
-
 }

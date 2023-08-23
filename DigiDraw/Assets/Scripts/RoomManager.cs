@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Unity.Netcode;
 using TMPro;
 using Unity.Collections;
+using UnityEngine.Diagnostics;
 
 public class RoomManager : NetworkBehaviour{
     public static RoomManager Instance {get; private set;}
@@ -19,6 +20,9 @@ public class RoomManager : NetworkBehaviour{
 
     public List<ulong> clientIdList = new List<ulong>();
     public int currentArtistIndex = 0;
+    //TODO : add ranking list
+    //list will be sorted whenever anyone scores and scorebaord will be updated
+    private List<KeyValuePair<string, int>> scores = new List<KeyValuePair<string, int>>();
 
     private int round = 1; 
     private int maxRounds = 2;
@@ -38,6 +42,10 @@ public class RoomManager : NetworkBehaviour{
     [SerializeField] TextMeshProUGUI timeTxt;
     [SerializeField] TextMeshProUGUI lobbyCodeTxt;
     [SerializeField] TextMeshProUGUI playerCountTxt;
+
+    [SerializeField] GameObject scoreCardParent;
+    [SerializeField] GameObject scorecard;
+    private List<GameObject> scorecardArray = new List<GameObject>();
 
     string _message; //string to send messages in chatbox
 
@@ -76,14 +84,15 @@ public class RoomManager : NetworkBehaviour{
             //currentArtist.Value = (ulong)LobbyManager.Instance.joinedLobby.MaxPlayers;
             currentArtistID = 0;
             currentArtistIndex = 0;
-            clientIdList.Add(playerScript.OwnerClientIdPlayer());
-
+            AddMeToList(playerScript.OwnerClientIdPlayer(), FirebaseAndGPGS.Instance.userName);
             //making lobby visible to others if not made private
             bool _isPrivate = LobbyManager.Instance.joinedLobby.Data["IsPrivate"].Value == "True";
             LobbyManager.Instance.ChangeLobbyVisibility(_isPrivate);
             GameHandler.Instance.FetchWordList();
+            
+
         }else{
-            playerScript.AddMeToListServerRpc();
+            playerScript.AddMeToListServerRpc(playerScript.OwnerClientIdPlayer(), FirebaseAndGPGS.Instance.userName);
             //set gamemode accordingly
             if(isWaiting.Value){
                 GameHandler.Instance.ChangeGameMode(0);
@@ -93,6 +102,7 @@ public class RoomManager : NetworkBehaviour{
                 _message = "Waiting for next turn";
                 playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
             }
+
             /*else{
                 GameHandler.Instance.ChangeGameMode(1);
                          
@@ -108,8 +118,37 @@ public class RoomManager : NetworkBehaviour{
         playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
     }
 
-    public void AddMeToList(ulong _id){
+    public void AddMeToList(ulong _id, string _name){
         clientIdList.Add(_id);
+        scores.Add(new KeyValuePair<string, int>(_name,0));
+        GameObject newScoreCard = Instantiate(scorecard,scoreCardParent.transform);
+        newScoreCard.GetComponent<NetworkObject>().Spawn();
+        scorecardArray.Add(newScoreCard);
+        UpdateStats(_name,0);
+    }
+
+    public void UpdateStats(string _name, int _score){
+        //TODO : update stats
+        for (int i = 0; i < scores.Count; i++){
+            KeyValuePair<string, int> currentPair = scores[i];
+            if(_name == currentPair.Key){
+                scores[i] = new KeyValuePair<string, int>(currentPair.Key, currentPair.Value + _score);
+                SortStatsDesc();
+                return;
+            }
+        }    
+    }
+
+    private void SortStatsDesc(){
+        scores.Sort(CompareByValue);
+        for(int i=0;i<scorecardArray.Count; i++){
+            PlayerStatsScript cardScript = scorecardArray[i].GetComponent<PlayerStatsScript>();
+            cardScript.SetStats((i+1).ToString(),scores[i].Key,scores[i].Value.ToString());
+        }
+    }
+
+    static int CompareByValue(KeyValuePair<string, int> x, KeyValuePair<string, int> y){
+        return y.Value.CompareTo(x.Value);
     }
 
     private void Update() {
@@ -193,9 +232,9 @@ public class RoomManager : NetworkBehaviour{
     private IEnumerator StartNewGame(){
         _message = "New game will start in 5 seconds";
         playerScript.SendNewMessageServerRpc(_message,"DigiDraw",true);
-
-
         playerScript.ChangeGameModeClientRpc(currentArtistID,currentWord);
+
+        //TODO: reset scorecards
         yield return new WaitForSeconds(maxWaitingTime);
         round = 1;
         currentArtistIndex = 0;

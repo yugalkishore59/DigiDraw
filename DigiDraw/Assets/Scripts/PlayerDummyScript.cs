@@ -16,8 +16,8 @@ public class PlayerDummyScript : NetworkBehaviour {
     }
 
     [ServerRpc]
-    public void AddMeToListServerRpc(){
-        RoomManager.Instance.AddMeToList(OwnerClientId);
+    public void AddMeToListServerRpc(ulong _id, string _name){
+        RoomManager.Instance.AddMeToList(_id, _name);
     }
 
     [ClientRpc]
@@ -55,6 +55,12 @@ public class PlayerDummyScript : NetworkBehaviour {
     private void SendNewMessageClientRpc(string _message, string _sender, bool isDidiDraw){
         GameHandler.Instance.SendNewMessage(_message,_sender, isDidiDraw);
     }
+
+    [ServerRpc]
+    public void UpdateScoreServerRpc(string _name, int _score){
+        RoomManager.Instance.UpdateStats(_name,_score);
+    }
+
 /*
     [ServerRpc]
     public void SetNewWordServerRpc(){
